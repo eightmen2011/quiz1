@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>単語帳作成</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#eef2ff;min-height:100vh;display:flex;flex-direction:column}
+header{background:#4f7cff;color:white;padding:10px;display:flex;justify-content:space-between;align-items:center}
+main{max-width:800px;margin:30px auto;text-align:center;flex:1}
+button{background:#4f7cff;color:white;border:none;border-radius:10px;padding:10px 18px;margin:10px;font-size:16px;cursor:pointer}
+.card{background:white;padding:25px;border-radius:12px;margin-bottom:20px}
+input{padding:12px;border-radius:10px;border:1px solid #ccc;font-size:16px;width:80%;max-width:400px}
+
+.row{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  margin-top:15px;
+}
+
+.wordRow{display:flex;justify-content:center;gap:10px;margin-top:10px}
+.wordRow input{width:200px}
+
+.list{margin-top:20px;text-align:left}
+.wordItem{border-bottom:1px solid #ddd;padding:6px;display:flex;justify-content:space-between;align-items:center}
+.notice{color:red}
+.smallBtn{background:#ff5c5c;border-radius:6px;padding:4px 8px;font-size:12px}
+
+footer{
+  background:#4f7cff;
+  color:white;
+  margin-top:40px;
+  padding:20px 0;
+}
+.footer-inner{max-width:1000px;margin:auto;text-align:center}
+.footer-links a{color:white;margin:0 10px;text-decoration:none;font-weight:bold}
+.footer-links a:hover{text-decoration:underline}
+.copy{font-size:12px;opacity:0.8}
+</style>
+</head>
+<body>
+
+<header>
+  <div>➕ 単語帳作成</div>
+  <button onclick="location.href='index.html'">ホーム</button>
+</header>
+
+<main>
+
+<div class="card">
+  <h2>単語帳情報</h2>
+  <input id="title" placeholder="単語帳タイトル"><br>
+
+  <div class="row">
+    <label for="isPublic">公開する</label>
+    <input type="checkbox" id="isPublic" checked>
+  </div>
+
+  <button onclick="createBook()">単語帳を作成</button>
+  <div id="msg" class="notice"></div>
+</div>
+
+<div class="card" id="wordArea" style="display:none">
+  <h2>単語を追加</h2>
+
+  <div class="wordRow">
+    <input id="front" placeholder="例：犬">
+    <input id="back" placeholder="例：dog">
+  </div>
+
+  <button onclick="addWord()">追加</button>
+
+  <div class="list" id="wordList"></div>
+
+  <hr>
+
+  <h3>CSV操作（ファイルのみ）</h3>
+  <input type="file" id="csvFile" accept=".csv,.txt"><br><br>
+
+  <button onclick="importCSV()">CSV読み込み</button>
+  <button onclick="exportCSV()">CSV書き出し</button>
+
+  <br><br>
+  <button onclick="goView()">完成して見る</button>
+</div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>📘 単語帳アプリ</div>
+    <div class="footer-links">
+      <a href="index.html">ホーム</a>
+      <a href="list.html">公開単語帳</a>
+      <a href="create.html">作成</a>
+      <a href="mypage.html">マイページ</a>
+    </div>
+    <div class="copy">© 2026 Wordbook App</div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
+  authDomain: "quiz1-4ffdc.firebaseapp.com",
+  projectId: "quiz1-4ffdc",
+  storageBucket: "quiz1-4ffdc.firebasestorage.app",
+  messagingSenderId: "152062126332",
+  appId: "1:152062126332:web:845af237a1a76207214f79"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const db=firebase.firestore();
+
+let currentUser=null;
+let bookId=null;
+
+auth.onAuthStateChanged(user=>{
+  if(user){
+    currentUser=user;
+  }else{
+    alert("ログインしてください");
+    location.href="login.html";
+  }
+});
+
+async function createBook(){
+  const title=document.getElementById("title").value.trim();
+  const isPublic=document.getElementById("isPublic").checked;
+  const msg=document.getElementById("msg");
+
+  if(!title){
+    msg.textContent="タイトルを入力してください";
+    return;
+  }
+
+  const doc = await db.collection("wordbooks").add({
+    title:title,
+    isPublic:isPublic,
+    owner:currentUser.uid,
+    ownerName:currentUser.displayName||"名無し"
+  });
+
+  bookId = doc.id;
+  document.getElementById("wordArea").style.display="block";
+  msg.textContent="単語帳を作成しました。単語を追加してください";
+}
+
+async function addWord(){
+  const f=document.getElementById("front").value.trim();
+  const b=document.getElementById("back").value.trim();
+  if(!f||!b||!bookId)return;
+
+  const doc = await db.collection("wordbooks").doc(bookId).collection("words").add({
+    front:f,
+    back:b
+  });
+
+  addWordToList(doc.id,f,b);
+
+  document.getElementById("front").value="";
+  document.getElementById("back").value="";
+}
+
+function addWordToList(id,f,b){
+  const div=document.createElement("div");
+  div.className="wordItem";
+  div.id="word_"+id;
+  div.innerHTML=`${f} → ${b}
+    <button class="smallBtn" onclick="deleteWord('${id}')">削除</button>`;
+  document.getElementById("wordList").appendChild(div);
+}
+
+async function deleteWord(id){
+  if(!confirm("削除しますか？")) return;
+  await db.collection("wordbooks").doc(bookId).collection("words").doc(id).delete();
+  document.getElementById("word_"+id).remove();
+}
+
+async function importCSV(){
+  if(!bookId)return;
+
+  const file=document.getElementById("csvFile").files[0];
+  if(!file){
+    alert("CSVファイルを選択してください");
+    return;
+  }
+
+  const text = await file.text();
+  const lines=text.split("\n");
+
+  for(const line of lines){
+    const [f,b]=line.split(",");
+    if(f && b){
+      const doc=await db.collection("wordbooks").doc(bookId).collection("words").add({
+        front:f.trim(),
+        back:b.trim()
+      });
+      addWordToList(doc.id,f.trim(),b.trim());
+    }
+  }
+
+  document.getElementById("csvFile").value="";
+}
+
+async function exportCSV(){
+  if(!bookId)return;
+
+  const snap=await db.collection("wordbooks").doc(bookId).collection("words").get();
+  let csv="";
+
+  snap.forEach(d=>{
+    const w=d.data();
+    csv+=`${w.front},${w.back}\n`;
+  });
+
+  const blob=new Blob([csv],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="words.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function goView(){
+  location.href="view.html?id="+bookId;
+}
+</script>
+
+</body>
+</html>
+
+
+
