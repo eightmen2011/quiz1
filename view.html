@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>View</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#eef2ff}
+header{background:#4f7cff;color:white;padding:10px;display:flex;justify-content:space-between}
+.card{background:white;max-width:600px;margin:20px auto;padding:20px;border-radius:10px}
+a.btn{background:white;color:#4f7cff;padding:6px 12px;border-radius:8px;text-decoration:none;font-weight:bold;margin-left:6px}
+.word{border-bottom:1px solid #ddd;padding:6px 0}
+footer{
+  background:#4f7cff;
+  color:white;
+  margin-top:40px;
+  padding:20px 0;
+}
+
+.footer-inner{
+  max-width:1000px;
+  margin:auto;
+  text-align:center;
+}
+
+.footer-links{
+  margin:10px 0;
+}
+
+.footer-links a{
+  color:white;
+  margin:0 10px;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.footer-links a:hover{
+  text-decoration:underline;
+}
+
+.copy{
+  font-size:12px;
+  opacity:0.8;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>単語帳</div>
+  <div>
+    <a class="btn" href="index.html">戻る</a>
+    <a class="btn" id="editBtn" style="display:none">編集</a>
+    <a class="btn" id="flashBtn">暗記</a>
+    <a class="btn" id="testBtn">テスト</a>
+  </div>
+</header>
+
+<div class="card">
+  <h2 id="title"></h2>
+  <div id="words"></div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>📘 単語帳アプリ</div>
+    <div class="footer-links">
+      <a href="index.html">ホーム</a>
+      <a href="list.html">公開単語帳</a>
+      <a href="create.html">作成</a>
+      <a href="mypage.html">マイページ</a>
+    </div>
+    <div class="copy">© 2026 Wordbook App</div>
+  </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+const firebaseConfig={apiKey:"AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",authDomain:"quiz1-4ffdc.firebaseapp.com",projectId:"quiz1-4ffdc",storageBucket:"quiz1-4ffdc.firebasestorage.app",messagingSenderId:"152062126332",appId:"1:152062126332:web:845af237a1a76207214f79"};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+const id=new URLSearchParams(location.search).get("id");
+let owner;
+
+const bookSnap=await getDoc(doc(db,"wordbooks",id));
+const book=bookSnap.data();
+owner=book.owner;
+title.textContent=book.title;
+
+const wSnap=await getDocs(collection(db,"wordbooks",id,"words"));
+wSnap.forEach(d=>{
+  words.innerHTML+=`<div class="word">${d.data().front} - ${d.data().back}</div>`;
+});
+
+flashBtn.href=`flash.html?id=${id}`;
+testBtn.href=`test.html?id=${id}`;
+
+onAuthStateChanged(auth,user=>{
+  if(user && user.uid===owner){
+    editBtn.style.display="inline";
+    editBtn.href=`edit.html?id=${id}`;
+  }
+});
+</script>
+</body>
+</html>
+
+
+
