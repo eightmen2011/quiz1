@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Test</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#eef2ff}
+header{background:#4f7cff;color:white;padding:10px;display:flex;justify-content:space-between}
+.card{background:white;max-width:600px;margin:40px auto;padding:30px;border-radius:12px;text-align:center}
+input{width:90%;padding:10px;font-size:16px}
+button{background:#4f7cff;color:white;border:none;border-radius:8px;padding:10px 16px;margin:6px;font-size:16px}
+label{font-size:14px}
+footer{background:#4f7cff;color:white;margin-top:40px;padding:20px 0}
+.footer-inner{max-width:1000px;margin:auto;text-align:center}
+.footer-links a{color:white;margin:0 10px;text-decoration:none;font-weight:bold}
+.copy{font-size:12px;opacity:0.8}
+</style>
+</head>
+<body>
+
+<header>
+  <div>テストモード</div>
+  <a href="index.html" style="color:white;text-decoration:none">戻る</a>
+</header>
+
+<!-- 設定画面 -->
+<div class="card" id="start">
+  <h2>テスト設定</h2>
+
+  <label>
+    <input type="checkbox" id="skipCheck" checked>
+    正解済みをスキップ
+  </label><br><br>
+
+  <button onclick="resetLearned()">🔄 学習データをリセット</button><br><br>
+
+  <button onclick="startTest()">▶ スタート</button>
+  <p id="startMsg" style="color:red"></p>
+</div>
+
+<!-- クイズ -->
+<div class="card" id="quiz" style="display:none">
+  <h2 id="q"></h2>
+  <input id="ans" placeholder="答えを入力">
+  <p id="result"></p>
+  <button onclick="check()">回答 (Enter)</button>
+</div>
+
+<!-- 結果 -->
+<div class="card" id="end" style="display:none">
+  <h2>結果</h2>
+  <p id="score"></p>
+  <button onclick="restart()">もう一回</button>
+  <button onclick="location.href='index.html'">戻る</button>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>📘 単語帳アプリ</div>
+    <div class="footer-links">
+      <a href="index.html">ホーム</a>
+      <a href="list.html">公開単語帳</a>
+      <a href="create.html">作成</a>
+      <a href="mypage.html">マイページ</a>
+    </div>
+    <div class="copy">© 2026 Wordbook App</div>
+  </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+const firebaseConfig={apiKey:"AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",authDomain:"quiz1-4ffdc.firebaseapp.com",projectId:"quiz1-4ffdc",storageBucket:"quiz1-4ffdc.firebasestorage.app",messagingSenderId:"152062126332",appId:"1:152062126332:web:845af237a1a76207214f79"};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+
+const id=new URLSearchParams(location.search).get("id");
+
+let words=[], filteredWords=[], i=0, correct=0, phase=0;
+
+let learned = JSON.parse(localStorage.getItem("learnedWords")) || {};
+if(!learned[id]) learned[id]=[];
+
+const snap=await getDocs(collection(db,"wordbooks",id,"words"));
+snap.forEach(d=>words.push(d.data()));
+
+window.startTest=()=>{
+  makeList();
+
+  if(filteredWords.length===0){
+    startMsg.textContent="すべて正解済みです。リセットしてください。";
+    return;
+  }
+
+  start.style.display="none";
+  quiz.style.display="block";
+  render();
+};
+
+function makeList(){
+  const skip=document.getElementById("skipCheck").checked;
+  if(skip){
+    filteredWords = words.filter(w=>!learned[id].includes(w.front));
+  }else{
+    filteredWords = [...words];
+  }
+  filteredWords.sort(()=>Math.random()-0.5);
+}
+
+function render(){
+  if(i>=filteredWords.length){
+    quiz.style.display="none";
+    end.style.display="block";
+    score.textContent=`${correct}/${filteredWords.length} (${Math.round(correct/filteredWords.length*100)}%)`;
+    return;
+  }
+  q.textContent=filteredWords[i].front;
+  ans.value="";
+  result.textContent="";
+  phase=0;
+}
+
+window.check=()=>{
+  if(phase===0){
+    if(ans.value.trim()===filteredWords[i].back){
+      result.textContent="⭕ 正解";
+      correct++;
+      if(!learned[id].includes(filteredWords[i].front)){
+        learned[id].push(filteredWords[i].front);
+        localStorage.setItem("learnedWords",JSON.stringify(learned));
+      }
+    }else{
+      result.textContent="❌ 不正解 正解: "+filteredWords[i].back;
+    }
+    phase=1;
+  }else{
+    i++;
+    render();
+  }
+};
+
+window.restart=()=>{
+  i=0;correct=0;
+  end.style.display="none";
+  quiz.style.display="block";
+  makeList();
+  render();
+};
+
+window.resetLearned=()=>{
+  if(!confirm("学習データを削除しますか？")) return;
+  learned[id]=[];
+  localStorage.setItem("learnedWords",JSON.stringify(learned));
+  startMsg.textContent="リセットしました。";
+};
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter" && quiz.style.display==="block") check();
+});
+</script>
+</body>
+</html>
+
+
+
