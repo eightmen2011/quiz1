@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>新規登録</title>
+
 <style>
 body{
   margin:0;
@@ -13,20 +14,25 @@ body{
   align-items:center;
   height:100vh;
 }
+
 .card{
   background:white;
   padding:30px;
   border-radius:15px;
   width:320px;
   text-align:center;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
+
 input{
   width:100%;
   padding:10px;
   border-radius:8px;
   border:1px solid #ccc;
   font-size:16px;
+  margin-top:10px;
 }
+
 button{
   background:#4f7cff;
   color:white;
@@ -36,80 +42,115 @@ button{
   width:100%;
   margin-top:15px;
   font-size:16px;
+  cursor:pointer;
 }
-.notice{color:red;margin-top:10px;}
+
+.notice{
+  color:red;
+  margin-top:10px;
+}
+
 .domain{
   margin-top:5px;
   font-size:14px;
   color:#555;
 }
+
 .link{
   margin-top:15px;
-}
-.link a{
-  color:#4f7cff;
-  text-decoration:none;
-  font-weight:bold;
 }
 </style>
 </head>
 <body>
 
 <div class="card">
-  <h2>新規登録</h2>
 
-  <input id="emailHead" placeholder="メール">
-  <div class="domain">@edu.nishiyamato.ed.jp</div>
+<h2>新規登録</h2>
 
-  <input id="password" type="password" placeholder="パスワード">
+<input id="username" placeholder="ユーザー名">
 
-  <button onclick="register()">登録</button>
+<input id="emailHead" placeholder="メール">
+<div class="domain">@edu.nishiyamato.ed.jp</div>
 
-  <div class="notice" id="msg"></div>
+<input id="password" type="password" placeholder="パスワード">
 
-  <div class="link">
-    すでに登録済みの方は  
-    <a href="login.html">ログイン</a>
-  </div>
+<button onclick="register()">登録</button>
+
+<div class="notice" id="msg"></div>
+
+<div class="link">
+  すでに登録済みの方は  
+  <a href="login.html">ログイン</a>
 </div>
 
+</div>
+
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
+
 const firebaseConfig = {
   apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
   authDomain: "quiz1-4ffdc.firebaseapp.com",
   projectId: "quiz1-4ffdc"
 };
+
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
 
-function register(){
-  const head=document.getElementById("emailHead").value.trim();
-  const pass=document.getElementById("password").value;
-  const msg=document.getElementById("msg");
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-  if(!head || !pass){
-    msg.textContent="すべて入力してください";
+async function register(){
+
+  const username = document.getElementById("username").value.trim();
+  const head = document.getElementById("emailHead").value.trim();
+  const pass = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
+
+  msg.textContent = "";
+
+  // 入力チェック
+  if(!username || !head || !pass){
+    msg.textContent = "すべて入力してください";
     return;
   }
 
   const email = head + "@edu.nishiyamato.ed.jp";
 
-  auth.createUserWithEmailAndPassword(email,pass)
-    .then(()=>{
-      alert("登録完了しました。ログインしてください。");
-      location.href="login.html";
-    })
-    .catch(e=>{
-      msg.textContent="登録失敗："+e.message;
+  try{
+
+    // 🔹Auth登録
+    const userCredential =
+      await auth.createUserWithEmailAndPassword(email,pass);
+
+    const user = userCredential.user;
+
+    // 🔹Authにusername保存
+    await user.updateProfile({
+      displayName: username
     });
+
+    // 🔹Firestoreに保存
+    await db.collection("users").doc(user.uid).set({
+      email: email,
+      username: username,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    alert("登録完了しました！");
+    location.href="login.html";
+
+  }catch(e){
+    msg.textContent = "登録失敗：" + e.message;
+  }
+
 }
+
 </script>
 
 </body>
 </html>
-
-
-
