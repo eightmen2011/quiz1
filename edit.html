@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>単語帳編集</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#eef2ff}
+header{background:#4f7cff;color:white;padding:10px;display:flex;justify-content:space-between;align-items:center}
+main{max-width:900px;margin:30px auto;text-align:center}
+button{background:#4f7cff;color:white;border:none;border-radius:10px;padding:8px 16px;margin:5px;font-size:14px;cursor:pointer}
+.card{background:white;padding:25px;border-radius:12px;margin-bottom:20px}
+.wordItem{border-bottom:1px solid #ddd;padding:10px;display:flex;justify-content:space-between;align-items:center}
+.danger{background:#ff5c5c}
+a{color:#4f7cff;text-decoration:none;font-weight:bold}
+.notice{color:red;margin-top:10px}
+.wordRow{display:flex;justify-content:center;gap:10px;margin-top:10px}
+.wordRow input{padding:10px;border-radius:10px;border:1px solid #ccc;font-size:14px;width:200px}
+
+footer{
+  background:#4f7cff;
+  color:white;
+  margin-top:40px;
+  padding:20px 0;
+}
+.footer-inner{
+  max-width:1000px;
+  margin:auto;
+  text-align:center;
+}
+.footer-links{
+  margin:10px 0;
+}
+.footer-links a{
+  color:white;
+  margin:0 10px;
+  text-decoration:none;
+  font-weight:bold;
+}
+.footer-links a:hover{
+  text-decoration:underline;
+}
+.copy{
+  font-size:12px;
+  opacity:0.8;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>✏ 単語帳編集</div>
+  <button onclick="location.href='index.html'">ホーム</button>
+</header>
+
+<main>
+  <div class="card">
+    <h2 id="title">読み込み中...</h2>
+    <div id="owner"></div>
+    <button class="danger" onclick="deleteBook()">この単語帳を削除</button>
+    <div id="msg" class="notice"></div>
+  </div>
+
+  <div class="card">
+    <h3>単語を追加</h3>
+    <div class="wordRow">
+      <input id="front" placeholder="例：犬">
+      <input id="back" placeholder="例：dog">
+    </div>
+    <button onclick="addWord()">追加</button>
+  </div>
+
+  <div class="card">
+    <h3>単語一覧</h3>
+    <div id="wordList"></div>
+  </div>
+
+  <!-- CSV操作 -->
+  <div class="card">
+    <h3>CSV操作</h3>
+    <input type="file" id="csvFile" accept=".csv,.txt"><br><br>
+    <button onclick="importCSV()">CSV読み込み</button>
+    <button onclick="exportCSV()">CSV書き出し</button>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>📘 単語帳アプリ</div>
+    <div class="footer-links">
+      <a href="index.html">ホーム</a>
+      <a href="list.html">公開単語帳</a>
+      <a href="create.html">作成</a>
+      <a href="mypage.html">マイページ</a>
+    </div>
+    <div class="copy">© 2026 Wordbook App</div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
+  authDomain: "quiz1-4ffdc.firebaseapp.com",
+  projectId: "quiz1-4ffdc",
+  storageBucket: "quiz1-4ffdc.firebasestorage.app",
+  messagingSenderId: "152062126332",
+  appId: "1:152062126332:web:845af237a1a76207214f79"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const db=firebase.firestore();
+
+const params=new URLSearchParams(location.search);
+const bookId=params.get("id");
+
+let currentUser=null;
+let bookOwner=null;
+
+auth.onAuthStateChanged(user=>{
+  if(!user){
+    alert("ログインしてください");
+    location.href="login.html";
+    return;
+  }
+  currentUser=user;
+  loadBook();
+});
+
+async function loadBook(){
+  const doc = await db.collection("wordbooks").doc(bookId).get();
+  if(!doc.exists){
+    alert("単語帳が見つかりません");
+    return;
+  }
+
+  const data = doc.data();
+  bookOwner = data.owner;
+
+  if(currentUser.uid !== bookOwner){
+    alert("他人の単語帳は編集できません");
+    location.href="view.html?id="+bookId;
+    return;
+  }
+
+  document.getElementById("title").textContent = data.title;
+  loadWords();
+}
+
+async function loadWords(){
+  const snap = await db.collection("wordbooks").doc(bookId).collection("words").get();
+  const area = document.getElementById("wordList");
+  area.innerHTML="";
+
+  snap.forEach(doc=>{
+    const w = doc.data();
+    const div=document.createElement("div");
+    div.className="wordItem";
+    div.id="word_"+doc.id;
+    div.innerHTML=`
+      ${w.front} → ${w.back}
+      <button class="danger" onclick="deleteWord('${doc.id}')">削除</button>
+    `;
+    area.appendChild(div);
+  });
+}
+
+async function addWord(){
+  const f=document.getElementById("front").value.trim();
+  const b=document.getElementById("back").value.trim();
+  if(!f || !b) return;
+
+  await db.collection("wordbooks").doc(bookId).collection("words").add({
+    front:f,
+    back:b
+  });
+
+  document.getElementById("front").value="";
+  document.getElementById("back").value="";
+
+  loadWords();
+}
+
+async function deleteWord(id){
+  if(!confirm("この単語を削除しますか？")) return;
+
+  await db.collection("wordbooks").doc(bookId).collection("words").doc(id).delete();
+  document.getElementById("word_"+id).remove();
+}
+
+async function deleteBook(){
+  if(!confirm("単語帳を完全に削除しますか？")) return;
+
+  await db.collection("wordbooks").doc(bookId).delete();
+  alert("削除しました");
+  location.href="index.html";
+}
+
+/* ===== CSV 読み込み ===== */
+async function importCSV(){
+  const file=document.getElementById("csvFile").files[0];
+  if(!file) return alert("CSVファイルを選択してください");
+
+  const text = await file.text();
+  const lines = text.trim().split("\n");
+
+  for(const line of lines){
+    const [f,b] = line.split(",");
+    if(f && b){
+      await db.collection("wordbooks").doc(bookId).collection("words").add({
+        front: f.trim(),
+        back: b.trim()
+      });
+    }
+  }
+  alert("CSV読み込み完了");
+  loadWords();
+}
+
+/* ===== CSV 書き出し ===== */
+async function exportCSV(){
+  const snap = await db.collection("wordbooks").doc(bookId).collection("words").get();
+  let csv="";
+
+  snap.forEach(doc=>{
+    const w=doc.data();
+    csv += `${w.front},${w.back}\n`;
+  });
+
+  const blob = new Blob([csv],{type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="words.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
+
+
+
