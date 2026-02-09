@@ -4,12 +4,52 @@
 <meta charset="UTF-8">
 <title>単語帳作成</title>
 <style>
-body{margin:0;font-family:sans-serif;background:#eef2ff;min-height:100vh;display:flex;flex-direction:column}
-header{background:#4f7cff;color:white;padding:10px;display:flex;justify-content:space-between;align-items:center}
-main{max-width:800px;margin:30px auto;text-align:center;flex:1}
-button{background:#4f7cff;color:white;border:none;border-radius:10px;padding:10px 18px;margin:10px;font-size:16px;cursor:pointer}
-.card{background:white;padding:25px;border-radius:12px;margin-bottom:20px}
-input{padding:12px;border-radius:10px;border:1px solid #ccc;font-size:16px;width:80%;max-width:400px}
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#eef2ff;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+header{
+  background:#4f7cff;
+  color:white;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+main{
+  max-width:800px;
+  margin:30px auto;
+  text-align:center;
+  flex:1;
+}
+button{
+  background:#4f7cff;
+  color:white;
+  border:none;
+  border-radius:10px;
+  padding:10px 18px;
+  margin:10px;
+  font-size:16px;
+  cursor:pointer;
+}
+.card{
+  background:white;
+  padding:25px;
+  border-radius:12px;
+  margin-bottom:20px;
+}
+input{
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  font-size:16px;
+  width:80%;
+  max-width:400px;
+}
 
 .row{
   display:flex;
@@ -19,13 +59,36 @@ input{padding:12px;border-radius:10px;border:1px solid #ccc;font-size:16px;width
   margin-top:15px;
 }
 
-.wordRow{display:flex;justify-content:center;gap:10px;margin-top:10px}
-.wordRow input{width:200px}
+.wordRow{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:10px;
+}
+.wordRow input{
+  width:200px;
+}
 
-.list{margin-top:20px;text-align:left}
-.wordItem{border-bottom:1px solid #ddd;padding:6px;display:flex;justify-content:space-between;align-items:center}
-.notice{color:red}
-.smallBtn{background:#ff5c5c;border-radius:6px;padding:4px 8px;font-size:12px}
+.list{
+  margin-top:20px;
+  text-align:left;
+}
+.wordItem{
+  border-bottom:1px solid #ddd;
+  padding:6px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.notice{
+  color:red;
+}
+.smallBtn{
+  background:#ff5c5c;
+  border-radius:6px;
+  padding:4px 8px;
+  font-size:12px;
+}
 
 footer{
   background:#4f7cff;
@@ -33,10 +96,24 @@ footer{
   margin-top:40px;
   padding:20px 0;
 }
-.footer-inner{max-width:1000px;margin:auto;text-align:center}
-.footer-links a{color:white;margin:0 10px;text-decoration:none;font-weight:bold}
-.footer-links a:hover{text-decoration:underline}
-.copy{font-size:12px;opacity:0.8}
+.footer-inner{
+  max-width:1000px;
+  margin:auto;
+  text-align:center;
+}
+.footer-links a{
+  color:white;
+  margin:0 10px;
+  text-decoration:none;
+  font-weight:bold;
+}
+.footer-links a:hover{
+  text-decoration:underline;
+}
+.copy{
+  font-size:12px;
+  opacity:0.8;
+}
 </style>
 </head>
 <body>
@@ -236,6 +313,3 @@ function goView(){
 
 </body>
 </html>
-
-
-
