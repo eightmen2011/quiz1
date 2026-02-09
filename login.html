@@ -2,70 +2,19 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
 <title>ログイン</title>
 <link rel="stylesheet" type="text/css" href="style.css">
-<style>
-body{
-  margin:0;
-  font-family:sans-serif;
-  background:#eef2ff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-.card{
-  background:white;
-  padding:30px;
-  border-radius:15px;
-  width:320px;
-  text-align:center;
-}
-input{
-  width:100%;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  font-size:16px;
-}
-button{
-  background:#4f7cff;
-  color:white;
-  border:none;
-  border-radius:10px;
-  padding:10px;
-  width:100%;
-  margin-top:15px;
-  font-size:16px;
-  cursor:pointer;
-}
-.link{
-  margin-top:15px;
-}
-.link a{
-  color:#4f7cff;
-  text-decoration:none;
-  font-weight:bold;
-}
-.notice{
-  color:red;
-  margin-top:10px;
-}
-.domain{
-  margin-top:5px;
-  font-size:14px;
-  color:#555;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="login.css">
 </head>
 <body>
-
 <div class="card">
   <h2>ログイン</h2>
 
-  <input id="emailHead" placeholder="メール">
-  <div class="domain">@edu.nishiyamato.ed.jp</div>
-
+  <div class="mailaddress">
+    <input id="emailHead" placeholder="メール">
+    <div class="domain">@edu.nishiyamato.ed.jp</div>
+  </div>
   <input id="password" type="password" placeholder="パスワード">
 
   <button onclick="login()">ログイン</button>
