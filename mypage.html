@@ -2,113 +2,187 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
-<title>Flash</title>
-<link rel="stylesheet" type="text/css" href="style.css">
+<title>マイページ</title>
 <style>
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#eef2ff;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+header{
+  background:#4f7cff;
+  color:white;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+main{
+  max-width:700px;
+  margin:30px auto;
+  flex:1;
+}
 .card{
   background:white;
-  max-width:600px;
-  margin:40px auto;
-  padding:30px;
+  padding:25px;
   border-radius:12px;
-  text-align:center;
+  margin-bottom:20px;
+}
+input{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  width:100%;
+  margin-top:8px;
 }
 button{
-  background:#191970;
+  background:#4f7cff;
   color:white;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
   padding:10px 16px;
-  margin:6px;
-  font-size:16px;
+  margin-top:10px;
+  cursor:pointer;
 }
+.notice{color:red;}
+.success{color:green;}
 </style>
 </head>
 <body>
 
 <header>
-  <div>暗記モード</div>
-  <a href="index.html" style="color:white;text-decoration:none">戻る</a>
+  <div>👤 マイページ</div>
+  <button onclick="location.href='index.html'">ホーム</button>
 </header>
 
+<main>
+
 <div class="card">
-  <h2 id="front"></h2>
-  <p id="back" style="display:none"></p>
-  <button onclick="showBack()">答えを見る (Enter)</button>
+  <h2>ユーザー情報</h2>
+  <p>UID: <span id="uid"></span></p>
+  <p>Email: <span id="email"></span></p>
+  <p>ユーザー名: <span id="usernameText">未設定</span></p>
+  <p>作成した単語帳数: <span id="bookCount">0</span></p>
 </div>
 
-<div class="card" id="end" style="display:none">
-  <h2>終了！</h2>
-  <button onclick="restart()">もう一回</button>
-  <button onclick="location.href='index.html'">戻る</button>
+<div class="card">
+  <h2>ユーザー名設定・変更</h2>
+  <input id="usernameInput" placeholder="新しいユーザー名">
+  <button onclick="updateUsername()">変更する</button>
+  <div id="nameMsg" class="notice"></div>
 </div>
 
-<footer>
-  <div class="footer-inner">
-    <div>📘 単語帳アプリ</div>
-    <div class="footer-links">
-      <a href="index.html">ホーム</a>
-      <a href="list.html">公開単語帳</a>
-      <a href="create.html">作成</a>
-      <a href="mypage.html">マイページ</a>
-      <a href="update.html">更新履歴</a>
-    </div>
-    <div class="copy">© 2026 Wordbook App</div>
-  </div>
+<div class="card">
+  <h2>パスワード変更</h2>
+  <input type="password" id="currentPass" placeholder="現在のパスワード">
+  <input type="password" id="newPass" placeholder="新しいパスワード">
+  <button onclick="changePassword()">変更する</button>
+  <div id="passMsg" class="notice"></div>
+</div>
+
+</main>
+
+<footer style="background:#4f7cff;color:white;text-align:center;padding:15px;">
+© 2026 Wordbook App
 </footer>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-const firebaseConfig={apiKey:"AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",authDomain:"quiz1-4ffdc.firebaseapp.com",projectId:"quiz1-4ffdc",storageBucket:"quiz1-4ffdc.firebasestorage.app",messagingSenderId:"152062126332",appId:"1:152062126332:web:845af237a1a76207214f79"};
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
+  authDomain: "quiz1-4ffdc.firebaseapp.com",
+  projectId: "quiz1-4ffdc"
+};
+firebase.initializeApp(firebaseConfig);
 
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let currentUser = null;
 
-const id=new URLSearchParams(location.search).get("id");
-let words=[],i=0,show=false;
-
-const snap=await getDocs(collection(db,"wordbooks",id,"words"));
-snap.forEach(d=>words.push(d.data()));
-words.sort(()=>Math.random()-0.5);
-
-function render(){
-  if(i>=words.length){
-    document.querySelector(".card").style.display="none";
-    end.style.display="block";
-    return;
-  }
-  front.textContent=words[i].front;
-  back.textContent=words[i].back;
-  back.style.display="none";
-  show=false;
-}
-
-window.showBack=()=>{
-  if(!show){
-    back.style.display="block";
-    show=true;
+auth.onAuthStateChanged(async user=>{
+  if(!user){
+    location.href="login.html";
   }else{
-    i++;
-    render();
+    currentUser = user;
+    document.getElementById("uid").textContent = user.uid;
+    document.getElementById("email").textContent = user.email;
+    document.getElementById("usernameText").textContent = user.displayName || "未設定";
+
+    loadBookCount();
   }
-};
-
-window.restart=()=>{
-  i=0;
-  words.sort(()=>Math.random()-0.5);
-  end.style.display="none";
-  document.querySelector(".card").style.display="block";
-  render();
-};
-
-document.addEventListener("keydown",e=>{
-  if(e.key==="Enter") showBack();
 });
 
-render();
+async function loadBookCount(){
+  const snap = await db.collection("wordbooks")
+    .where("owner","==",currentUser.uid)
+    .get();
+  document.getElementById("bookCount").textContent = snap.size;
+}
+
+async function updateUsername(){
+  const newName = document.getElementById("usernameInput").value.trim();
+  const msg = document.getElementById("nameMsg");
+
+  if(!newName){
+    msg.textContent = "ユーザー名を入力してください";
+    return;
+  }
+
+  try{
+    await currentUser.updateProfile({
+      displayName: newName
+    });
+
+    // Firestoreにも保存（単語帳表示用）
+    await db.collection("users").doc(currentUser.uid).set({
+      username: newName
+    });
+
+    document.getElementById("usernameText").textContent = newName;
+    msg.textContent = "ユーザー名を変更しました";
+    msg.className="success";
+    document.getElementById("usernameInput").value="";
+  }catch(e){
+    msg.textContent = "エラー: " + e.message;
+    msg.className="notice";
+  }
+}
+
+async function changePassword(){
+  const current=document.getElementById("currentPass").value;
+  const newPass=document.getElementById("newPass").value;
+  const msg=document.getElementById("passMsg");
+
+  if(!current || !newPass){
+    msg.textContent="すべて入力してください";
+    return;
+  }
+
+  try{
+    const cred = firebase.auth.EmailAuthProvider.credential(
+      currentUser.email,
+      current
+    );
+
+    await currentUser.reauthenticateWithCredential(cred);
+    await currentUser.updatePassword(newPass);
+
+    msg.textContent="パスワードを変更しました";
+    msg.className="success";
+    document.getElementById("currentPass").value="";
+    document.getElementById("newPass").value="";
+  }catch(e){
+    msg.textContent="エラー: "+e.message;
+    msg.className="notice";
+  }
+}
 </script>
+
 </body>
 </html>
