@@ -3,45 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
-<title>単語帳</title>
+<title>View</title>
 <link rel="stylesheet" type="text/css" href="style.css">
 <style>
 .card{
   background:white;
-  padding:25px;
-  border-radius:12px;
-}
-.list{
-  background:white;
-  margin-top:20px;
+  max-width:600px;
+  margin:20px auto;
   padding:20px;
-  border-radius:12px;
+  border-radius:10px;
+  align-items: center;
 }
-.wordbook{
-  padding:10px;
-  border-bottom:1px solid #ddd;
+
+.btn3{
   display:flex;
-  justify-content:space-between;
+  align-items:center;
+  width:80%;
 }
-a{
-  text-decoration:none;
+a.btn{
+  background:white;
   color:#191970;
+  padding:6px 12px;
+  border-radius:8px;
+  text-decoration:none;
   font-weight:bold;
+  border:1px solid #191970;
+  width:100%;
 }
-html, body{
-  height:100%;
-  margin:0;
+a.editBtn{
+  margin-right:5px;
 }
-body{
-  display:flex;
-  flex-direction:column;
-  background:#eef2ff;
+a.flashBtn{
+  margin-left:5px;
+  margin-right:5px;
 }
-main{
-  flex:1;
-  max-width:1000px;
-  margin:30px auto;
-  text-align:center;
+a.testBtn{
+  margin-left:5px;
+}
+.word{
+  border-bottom:1px solid #ddd;
+  padding:6px 0;
 }
 </style>
 </head>
@@ -49,132 +50,66 @@ main{
 
 <header>
   <p class="headertitle"><a href="index.html">単語帳アプリ</a></p>
-  <div id="status" style="display:none">ログイン確認中...</div>
-  <div>
-    <button id="mypageBtn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
-    <button id="loginBtn" onclick="location.href='login.html'">ログイン</button>
-    <button id="logoutBtn" style="display:none" onclick="logout()">ログアウト</button>
   </div>
 </header>
 
-<main>
-  <div class="card">
-    <h1>単語帳アプリ</h1>
-    <button onclick="goPage('create.html')">➕ 作成</button>
-    <button onclick="goPage('list.html')">📚 一覧</button>
+<div class="card">
+  <h2 id="title"></h2>
+  <div class="btn3">
+    <a class="btn" id="editBtn" style="display:none">編集</a>
+    <a class="btn" id="flashBtn">暗記</a>
+    <a class="btn" id="testBtn">テスト</a>
   </div>
-
-  <div id="myBooks" class="list" style="display:none">
-    <h2>📖 自分の単語帳</h2>
-    <div id="bookList"></div>
-  </div>
-</main>
+  <div id="words"></div>
+</div>
 
 <footer>
   <div class="footer-inner">
     <div>📘 単語帳アプリ</div>
     <div class="footer-links">
-      <a href="#" onclick="goPage('index.html')">ホーム</a>
-      <a href="#" onclick="goPage('list.html')">公開単語帳</a>
-      <a href="#" onclick="goPage('create.html')">作成</a>
-      <a href="#" onclick="goPage('mypage.html')">マイページ</a>
-      <a href="#" onclick="goPage('update.html')">更新履歴</a>
+      <a href="index.html">ホーム</a>
+      <a href="list.html">公開単語帳</a>
+      <a href="create.html">作成</a>
+      <a href="mypage.html">マイページ</a>
+      <a href="update.html">更新履歴</a>
     </div>
     <div class="copy">© 2026 Wordbook App</div>
   </div>
 </footer>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
-  authDomain: "quiz1-4ffdc.firebaseapp.com",
-  projectId: "quiz1-4ffdc",
-  storageBucket: "quiz1-4ffdc.firebasestorage.app",
-  messagingSenderId: "152062126332",
-  appId: "1:152062126332:web:845af237a1a76207214f79"
-};
+const firebaseConfig={apiKey:"AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",authDomain:"quiz1-4ffdc.firebaseapp.com",projectId:"quiz1-4ffdc",storageBucket:"quiz1-4ffdc.firebasestorage.app",messagingSenderId:"152062126332",appId:"1:152062126332:web:845af237a1a76207214f79"};
 
-firebase.initializeApp(firebaseConfig);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+const id=new URLSearchParams(location.search).get("id");
+let owner;
 
-const statusDiv = document.getElementById("status");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const mypageBtn = document.getElementById("mypageBtn");
-const myBooksDiv = document.getElementById("myBooks");
-const bookListDiv = document.getElementById("bookList");
+const bookSnap=await getDoc(doc(db,"wordbooks",id));
+const book=bookSnap.data();
+owner=book.owner;
+title.textContent=book.title;
 
-let currentUser = null;
-
-auth.onAuthStateChanged(user=>{
-  currentUser = user;
-  if(user){
-    statusDiv.textContent = "ログイン中: " + user.uid;
-    loginBtn.style.display="none";
-    logoutBtn.style.display="inline-block";
-    mypageBtn.style.display="inline-block";
-    loadMyBooks(user.uid);
-  }else{
-    statusDiv.textContent = "ログアウト中";
-    loginBtn.style.display="inline-block";
-    logoutBtn.style.display="none";
-    mypageBtn.style.display="none";
-    myBooksDiv.style.display="none";
-  }
+const wSnap=await getDocs(collection(db,"wordbooks",id,"words"));
+wSnap.forEach(d=>{
+  words.innerHTML+=`<div class="word">${d.data().front} - ${d.data().back}</div>`;
 });
 
-function goPage(page){
-  if(page === "index.html"){
-    location.href = "index.html";
-    return;
+flashBtn.href=`flash.html?id=${id}`;
+testBtn.href=`test.html?id=${id}`;
+
+onAuthStateChanged(auth,user=>{
+  if(user && user.uid===owner){
+    editBtn.style.display="inline";
+    editBtn.href=`edit.html?id=${id}`;
   }
-  if(currentUser){
-    location.href = page;
-  }else{
-    alert("ログインしてください");
-    location.href = "login.html";
-  }
-}
-
-function logout(){
-  auth.signOut();
-}
-
-function loadMyBooks(uid){
-  db.collection("wordbooks")
-    .where("owner","==",uid)
-    .get()
-    .then(snapshot=>{
-      bookListDiv.innerHTML="";
-      myBooksDiv.style.display="block";
-
-      if(snapshot.empty){
-        bookListDiv.innerHTML="<p>まだ単語帳がありません</p>";
-        return;
-      }
-
-      snapshot.forEach(doc=>{
-        const data = doc.data();
-        const div = document.createElement("div");
-        div.className="wordbook";
-        div.innerHTML = `
-          <span>${data.title}</span>
-          <a href="view.html?id=${doc.id}">開く</a>
-        `;
-        bookListDiv.appendChild(div);
-      });
-    })
-    .catch(err=>{
-      alert("読み込みエラー: "+err.message);
-    });
-}
+});
 </script>
-
 </body>
 </html>
