@@ -4,7 +4,9 @@ body{
   background:#eef2ff;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200..900&display=swap');
 header{
+  font-family: "Noto Serif JP", serif;
   background:#191970;
   color:white;
   padding:10px;
