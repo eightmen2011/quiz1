@@ -1,49 +1,59 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
-<title>単語帳</title>
-<link rel="stylesheet" type="text/css" href="style.css">
-<style>
-.card{
-  background:white;
-  padding:25px;
-  border-radius:12px;
-}
-.list{
-  background:white;
-  margin-top:20px;
-  padding:20px;
-  border-radius:12px;
-}
-.wordbook{
-  padding:10px;
-  border-bottom:1px solid #ddd;
-  display:flex;
-  justify-content:space-between;
-}
-a{
-  text-decoration:none;
-  color:#191970;
-  font-weight:bold;
-}
-html, body{
-  height:100%;
-  margin:0;
-}
-body{
-  display:flex;
-  flex-direction:column;
-  background:#eef2ff;
-}
-main{
-  flex:1;
-  max-width:1000px;
-  margin:30px auto;
-  text-align:center;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
+  <title>単語帳</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js').then(registration => {
+        console.log('ServiceWorker registration successful.');
+      }).catch(err => {
+        console.log('ServiceWorker registration failed.');
+      });
+    }
+  </script>
+  <style>
+  .card{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+  }
+  .list{
+    background:white;
+    margin-top:20px;
+    padding:20px;
+    border-radius:12px;
+  }
+  .wordbook{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+    display:flex;
+    justify-content:space-between;
+  }
+  a{
+    text-decoration:none;
+    color:#191970;
+    font-weight:bold;
+  }
+  html, body{
+    height:100%;
+    margin:0;
+  }
+  body{
+    display:flex;
+    flex-direction:column;
+    background:#eef2ff;
+  }
+  main{
+    flex:1;
+    max-width:1000px;
+    margin:30px auto;
+    text-align:center;
+  }
+  </style>
 </head>
 <body>
 
