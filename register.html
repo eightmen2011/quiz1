@@ -13,6 +13,8 @@
 
 <h2>新規登録</h2>
 
+<form onsubmit="register(); return false;">
+
 <input id="username" placeholder="ユーザー名">
 
 <div class="mailaddress">
@@ -21,7 +23,7 @@
 </div>
 <input id="password" type="password" placeholder="パスワード">
 
-<button onclick="register()">登録</button>
+<button type="submit">登録</button>
 
 <div class="notice" id="msg"></div>
 
@@ -30,10 +32,9 @@
   <a href="login.html">ログイン</a>
 </div>
 
+</form>
 </div>
 
-
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -60,7 +61,6 @@ async function register(){
 
   msg.textContent = "";
 
-  // 入力チェック
   if(!username || !head || !pass){
     msg.textContent = "すべて入力してください";
     return;
@@ -69,19 +69,15 @@ async function register(){
   const email = head + "@edu.nishiyamato.ed.jp";
 
   try{
-
-    // 🔹Auth登録
     const userCredential =
       await auth.createUserWithEmailAndPassword(email,pass);
 
     const user = userCredential.user;
 
-    // 🔹Authにusername保存
     await user.updateProfile({
       displayName: username
     });
 
-    // 🔹Firestoreに保存
     await db.collection("users").doc(user.uid).set({
       email: email,
       username: username,
