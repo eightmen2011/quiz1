@@ -12,13 +12,15 @@
 <div class="card">
   <h2>ログイン</h2>
 
+<form onsubmit="login(); return false;">
+
   <div class="mailaddress">
     <input id="emailHead" placeholder="メール">
     <div class="domain">@edu.nishiyamato.ed.jp</div>
   </div>
   <input id="password" type="password" placeholder="パスワード">
 
-  <button onclick="login()">ログイン</button>
+  <button type="submit">ログイン</button>
 
   <div class="notice" id="msg"></div>
 
@@ -26,6 +28,8 @@
     登録がまだの方は  
     <a href="register.html">こちら</a>
   </div>
+
+</form>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -52,11 +56,9 @@ function login(){
 
   let email="";
 
-  // 特例Gmail
   if(input === "hachikou1616@gmail.com"){
     email = input;
   }
-  // @が入っている場合
   else if(input.includes("@")){
     if(input.endsWith("@edu.nishiyamato.ed.jp")){
       email = input;
@@ -65,7 +67,6 @@ function login(){
       return;
     }
   }
-  // 学籍番号だけ入力された場合
   else{
     email = input + "@edu.nishiyamato.ed.jp";
   }
