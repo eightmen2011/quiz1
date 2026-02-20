@@ -43,24 +43,24 @@ main{
 <body>
 
 <header>
-  <p class="headertitle"><a href="index.html">単語帳アプリ</a></p>
+  <p class="headertitle"><a href="index.html">Vocaboost</a></p>
 </header>
 
 <main>
   <div class="card">
-    <h2>👤 ユーザー情報</h2>
+    <h2>ユーザー情報</h2>
     <p id="userNameText">読み込み中...</p>
   </div>
 
   <div class="card">
-    <h3>📚 公開している単語帳</h3>
+    <h3>公開している単語帳</h3>
     <div id="bookList"></div>
   </div>
 </main>
 
 <footer>
   <div class="footer-inner">
-    <div>📘 単語帳アプリ</div>
+    <div>Vocaboost</div>
     <div class="footer-links">
       <a href="index.html">ホーム</a>
       <a href="list.html">公開単語帳</a>
@@ -113,7 +113,7 @@ async function loadUser(){
     const username = userData.username || "名無し";
 
     userNameText.textContent = "ユーザー名: " + username;
-    headerName.textContent = "👤 " + username;
+    headerName.textContent = username;
 
     loadBooks(username);
 
