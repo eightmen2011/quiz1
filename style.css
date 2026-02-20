@@ -16,8 +16,9 @@ header{
 }
 
 .headertitle{
-  margin:7px;
+  margin:0;
   font-size:25px;
+  margin-top:10px;
   a{
     color:#eef2ff;
     font-weight:normal;
