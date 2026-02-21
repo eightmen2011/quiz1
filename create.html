@@ -26,16 +26,6 @@ input{
   border-radius:10px;
   border:1px solid #ccc;
   font-size:16px;
-  width:80%;
-  max-width:400px;
-}
-
-.row{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:5px;
-  margin-top:15px;
 }
 
 .wordRow{
@@ -49,14 +39,9 @@ input{
   width:200px;
 }
 
-.list{
-  margin-top:20px;
-  text-align:left;
-}
-
 .wordItem{
   border-bottom:1px solid #ddd;
-  padding:6px;
+  padding:8px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -70,35 +55,21 @@ input{
   padding:4px 8px;
   cursor:pointer;
 }
-
-.notice{
-  color:red;
-}
 </style>
 </head>
 <body>
-
-<header>
-  <h2>単語帳作成</h2>
-</header>
 
 <main>
 
 <div class="card">
   <h2>単語帳情報</h2>
-  <input id="title" placeholder="単語帳タイトル"><br>
-
-  <div class="row">
-    <label>公開する</label>
-    <input type="checkbox" id="isPublic" checked>
-  </div>
-
+  <input id="title" placeholder="単語帳タイトル"><br><br>
   <button onclick="createBook()">単語帳を作成</button>
-  <div id="msg" class="notice"></div>
+  <div id="msg" style="color:red;"></div>
 </div>
 
-<div class="card" id="wordArea" style="display:none">
-  <h2>単語を追加</h2>
+<div class="card" id="wordArea" style="display:none;">
+  <h2>単語を追加（Enter対応）</h2>
 
   <div class="wordRow">
     <input id="front" placeholder="例：犬">
@@ -107,18 +78,7 @@ input{
 
   <button onclick="addWord()">追加</button>
 
-  <div class="list" id="wordList"></div>
-
-  <hr>
-
-  <h3>CSV操作</h3>
-  <input type="file" id="csvFile" accept=".csv,.txt"><br><br>
-
-  <button onclick="importCSV()">CSV読み込み</button>
-  <button onclick="exportCSV()">CSV書き出し</button>
-
-  <br><br>
-  <button onclick="goView()">完成して見る</button>
+  <div id="wordList"></div>
 </div>
 
 </main>
@@ -135,23 +95,67 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 
 let currentUser = null;
 let bookId = null;
 
-/* ===== ログイン確認 ===== */
+/* ログイン確認 */
 auth.onAuthStateChanged(user=>{
   if(user){
-    currentUser=user;
+    currentUser = user;
   }else{
     alert("ログインしてください");
     location.href="login.html";
   }
 });
 
-/* ===== Enterで追加できるようにする ===== */
+/* 単語帳作成 */
+async function createBook(){
+  const title = document.getElementById("title").value.trim();
+  const msg = document.getElementById("msg");
+
+  if(!title){
+    msg.textContent="タイトルを入力してください";
+    return;
+  }
+
+  const doc = await db.collection("wordbooks").add({
+    title:title,
+    owner:currentUser.uid,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  bookId = doc.id;
+  document.getElementById("wordArea").style.display="block";
+  msg.textContent="作成しました。単語を追加してください";
+}
+
+/* 単語追加 */
+async function addWord(){
+  const f = document.getElementById("front").value.trim();
+  const b = document.getElementById("back").value.trim();
+
+  if(!f || !b || !bookId) return;
+
+  const doc = await db.collection("wordbooks")
+    .doc(bookId)
+    .collection("words")
+    .add({
+      front:f,
+      back:b
+    });
+
+  addWordToList(doc.id,f,b);
+
+  document.getElementById("front").value="";
+  document.getElementById("back").value="";
+  document.getElementById("front").focus();
+}
+
+/* Enter対応 */
 document.getElementById("front").addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     e.preventDefault();
@@ -166,56 +170,9 @@ document.getElementById("back").addEventListener("keydown",e=>{
   }
 });
 
-/* ===== 単語帳作成 ===== */
-async function createBook(){
-  const title=document.getElementById("title").value.trim();
-  const isPublic=document.getElementById("isPublic").checked;
-  const msg=document.getElementById("msg");
-
-  if(!title){
-    msg.textContent="タイトルを入力してください";
-    return;
-  }
-
-  const doc = await db.collection("wordbooks").add({
-    title:title,
-    isPublic:isPublic,
-    owner:currentUser.uid,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  bookId = doc.id;
-
-  document.getElementById("wordArea").style.display="block";
-  msg.textContent="単語帳を作成しました。単語を追加してください";
-}
-
-/* ===== 単語追加 ===== */
-async function addWord(){
-  const f=document.getElementById("front").value.trim();
-  const b=document.getElementById("back").value.trim();
-
-  if(!f||!b||!bookId) return;
-
-  const doc = await db.collection("wordbooks")
-    .doc(bookId)
-    .collection("words")
-    .add({
-      front:f,
-      back:b,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-  addWordToList(doc.id,f,b);
-
-  document.getElementById("front").value="";
-  document.getElementById("back").value="";
-  document.getElementById("front").focus();
-}
-
-/* ===== 表示 ===== */
+/* 画面に追加 */
 function addWordToList(id,f,b){
-  const div=document.createElement("div");
+  const div = document.createElement("div");
   div.className="wordItem";
   div.id="word_"+id;
 
@@ -227,7 +184,7 @@ function addWordToList(id,f,b){
   document.getElementById("wordList").appendChild(div);
 }
 
-/* ===== 削除 ===== */
+/* 削除 */
 async function deleteWord(id){
   if(!confirm("削除しますか？")) return;
 
@@ -237,69 +194,7 @@ async function deleteWord(id){
     .doc(id)
     .delete();
 
-  const el = document.getElementById("word_"+id);
-  if(el) el.remove();
-}
-
-/* ===== CSV読み込み ===== */
-async function importCSV(){
-  if(!bookId) return;
-
-  const file=document.getElementById("csvFile").files[0];
-  if(!file) return alert("CSVを選択してください");
-
-  const text = await file.text();
-  const lines=text.split("\n");
-
-  for(const line of lines){
-    const [f,b]=line.split(",");
-    if(f && b){
-      const doc=await db.collection("wordbooks")
-        .doc(bookId)
-        .collection("words")
-        .add({
-          front:f.trim(),
-          back:b.trim()
-        });
-
-      addWordToList(doc.id,f.trim(),b.trim());
-    }
-  }
-
-  document.getElementById("csvFile").value="";
-}
-
-/* ===== CSV書き出し ===== */
-async function exportCSV(){
-  if(!bookId) return;
-
-  const snap=await db.collection("wordbooks")
-    .doc(bookId)
-    .collection("words")
-    .get();
-
-  let csv="";
-  snap.forEach(d=>{
-    const w=d.data();
-    csv+=`${w.front},${w.back}\n`;
-  });
-
-  const blob=new Blob([csv],{type:"text/plain"});
-  const url=URL.createObjectURL(blob);
-
-  const a=document.createElement("a");
-  a.href=url;
-  a.download="words.csv";
-  a.click();
-
-  URL.revokeObjectURL(url);
-}
-
-/* ===== 閲覧ページへ ===== */
-function goView(){
-  if(bookId){
-    location.href="view.html?id="+bookId;
-  }
+  document.getElementById("word_"+id).remove();
 }
 </script>
 
