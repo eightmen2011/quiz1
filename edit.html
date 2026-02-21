@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
 <title>単語帳編集</title>
+
 <link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <link rel="stylesheet" type="text/css" href="style.css">
+
 <style>
 .card{
   background:white;
@@ -14,6 +16,7 @@
   border-radius:12px;
   margin-bottom:20px;
 }
+
 .wordItem{
   border-bottom:1px solid #ddd;
   padding:10px;
@@ -21,57 +24,63 @@
   justify-content:space-between;
   align-items:center;
 }
+
 .danger{
   background:#ff5c5c;
+  color:white;
+  border:none;
+  padding:5px 10px;
+  border-radius:8px;
+  cursor:pointer;
 }
-a{
-  color:#191970;
-  text-decoration:none;
-  font-weight:bold;
-}
+
 .notice{
   color:red;
   margin-top:10px;
 }
+
 .wordRow{
   display:flex;
   justify-content:center;
   gap:10px;
   margin-top:10px;
 }
+
 .wordRow input{
   padding:10px;
   border-radius:10px;
   border:1px solid #ccc;
   font-size:14px;
-  width:200px
+  width:200px;
 }
-
 </style>
 </head>
 <body>
 
 <header>
-  <div class="headertitle"><a href="index.html"><img src="./headerrogo.png" height="45px"></a></div>
+  <div class="headertitle">
+    <a href="index.html">
+      <img src="./headerrogo.png" height="45px">
+    </a>
+  </div>
 </header>
 
 <main>
+
+  <!-- 単語帳情報 -->
   <div class="card">
     <h2 id="title">読み込み中...</h2>
-    <div id="owner"></div>
     <button class="danger" onclick="deleteBook()">この単語帳を削除</button>
     <div id="msg" class="notice"></div>
   </div>
 
+  <!-- 単語追加（自動行追加） -->
   <div class="card">
-    <h3>単語を追加</h3>
-    <div class="wordRow">
-      <input id="front" placeholder="例：犬">
-      <input id="back" placeholder="例：dog">
-    </div>
-    <button onclick="addWord()">追加</button>
+    <h3>単語を追加（Enterで次へ）</h3>
+    <div id="inputArea"></div>
   </div>
 
+  <!-- 単語一覧 -->
   <div class="card">
     <h3>単語一覧</h3>
     <div id="wordList"></div>
@@ -84,21 +93,8 @@ a{
     <button onclick="importCSV()">CSV読み込み</button>
     <button onclick="exportCSV()">CSV書き出し</button>
   </div>
-</main>
 
-<footer>
-  <div class="footer-inner">
-    <div>Vocaboost</div>
-    <div class="footer-links">
-      <a href="index.html">ホーム</a>
-      <a href="list.html">公開単語帳</a>
-      <a href="create.html">作成</a>
-      <a href="mypage.html">マイページ</a>
-      <a href="update.html">更新履歴</a>
-    </div>
-    <div class="copy">© 2026 Wordbook App</div>
-  </div>
-</footer>
+</main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -124,6 +120,7 @@ const bookId=params.get("id");
 let currentUser=null;
 let bookOwner=null;
 
+/* ===== ログイン確認 ===== */
 auth.onAuthStateChanged(user=>{
   if(!user){
     alert("ログインしてください");
@@ -134,6 +131,7 @@ auth.onAuthStateChanged(user=>{
   loadBook();
 });
 
+/* ===== 単語帳読み込み ===== */
 async function loadBook(){
   const doc = await db.collection("wordbooks").doc(bookId).get();
   if(!doc.exists){
@@ -151,50 +149,103 @@ async function loadBook(){
   }
 
   document.getElementById("title").textContent = data.title;
+
+  createInputRow(); // 最初の入力行
   loadWords();
 }
 
+/* ===== 入力行作成 ===== */
+function createInputRow(){
+  const area=document.getElementById("inputArea");
+
+  const row=document.createElement("div");
+  row.className="wordRow";
+
+  const frontInput=document.createElement("input");
+  frontInput.placeholder="例：犬";
+
+  const backInput=document.createElement("input");
+  backInput.placeholder="例：dog";
+
+  // 左でEnter → 右へ
+  frontInput.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      e.preventDefault();
+      backInput.focus();
+    }
+  });
+
+  // 右でEnter → 保存＆新規行
+  backInput.addEventListener("keydown",async e=>{
+    if(e.key==="Enter"){
+      e.preventDefault();
+
+      const f=frontInput.value.trim();
+      const b=backInput.value.trim();
+      if(!f || !b) return;
+
+      await db.collection("wordbooks")
+        .doc(bookId)
+        .collection("words")
+        .add({front:f, back:b});
+
+      loadWords();
+
+      // 現在の行を削除
+      row.remove();
+
+      // 新しい行を作る
+      createInputRow();
+      document.querySelector("#inputArea input").focus();
+    }
+  });
+
+  row.appendChild(frontInput);
+  row.appendChild(backInput);
+  area.appendChild(row);
+
+  frontInput.focus();
+}
+
+/* ===== 単語一覧表示 ===== */
 async function loadWords(){
-  const snap = await db.collection("wordbooks").doc(bookId).collection("words").get();
-  const area = document.getElementById("wordList");
+  const snap=await db.collection("wordbooks")
+    .doc(bookId)
+    .collection("words")
+    .get();
+
+  const area=document.getElementById("wordList");
   area.innerHTML="";
 
   snap.forEach(doc=>{
-    const w = doc.data();
+    const w=doc.data();
     const div=document.createElement("div");
     div.className="wordItem";
     div.id="word_"+doc.id;
+
     div.innerHTML=`
       ${w.front} → ${w.back}
-      <button class="danger" onclick="deleteWord('${doc.id}">削除</button>
+      <button class="danger" onclick="deleteWord('${doc.id}')">削除</button>
     `;
+
     area.appendChild(div);
   });
 }
 
-async function addWord(){
-  const f=document.getElementById("front").value.trim();
-  const b=document.getElementById("back").value.trim();
-  if(!f || !b) return;
-
-  await db.collection("wordbooks").doc(bookId).collection("words").add({
-    front:f,
-    back:b
-  });
-
-  document.getElementById("front").value="";
-  document.getElementById("back").value="";
-
-  loadWords();
-}
-
+/* ===== 単語削除 ===== */
 async function deleteWord(id){
   if(!confirm("この単語を削除しますか？")) return;
 
-  await db.collection("wordbooks").doc(bookId).collection("words").doc(id).delete();
+  await db.collection("wordbooks")
+    .doc(bookId)
+    .collection("words")
+    .doc(id)
+    .delete();
+
   document.getElementById("word_"+id).remove();
 }
 
+/* ===== 単語帳削除 ===== */
 async function deleteBook(){
   if(!confirm("単語帳を完全に削除しますか？")) return;
 
@@ -203,43 +254,53 @@ async function deleteBook(){
   location.href="index.html";
 }
 
-/* ===== CSV 読み込み ===== */
+/* ===== CSV読み込み ===== */
 async function importCSV(){
   const file=document.getElementById("csvFile").files[0];
   if(!file) return alert("CSVファイルを選択してください");
 
-  const text = await file.text();
-  const lines = text.trim().split("\n");
+  const text=await file.text();
+  const lines=text.trim().split("\n");
 
   for(const line of lines){
-    const [f,b] = line.split(",");
+    const [f,b]=line.split(",");
     if(f && b){
-      await db.collection("wordbooks").doc(bookId).collection("words").add({
-        front: f.trim(),
-        back: b.trim()
-      });
+      await db.collection("wordbooks")
+        .doc(bookId)
+        .collection("words")
+        .add({
+          front:f.trim(),
+          back:b.trim()
+        });
     }
   }
+
   alert("CSV読み込み完了");
   loadWords();
 }
 
-/* ===== CSV 書き出し ===== */
+/* ===== CSV書き出し ===== */
 async function exportCSV(){
-  const snap = await db.collection("wordbooks").doc(bookId).collection("words").get();
+  const snap=await db.collection("wordbooks")
+    .doc(bookId)
+    .collection("words")
+    .get();
+
   let csv="";
 
   snap.forEach(doc=>{
     const w=doc.data();
-    csv += `${w.front},${w.back}\n`;
+    csv+=`${w.front},${w.back}\n`;
   });
 
-  const blob = new Blob([csv],{type:"text/plain;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
+  const blob=new Blob([csv],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+
   const a=document.createElement("a");
   a.href=url;
   a.download="words.csv";
   a.click();
+
   URL.revokeObjectURL(url);
 }
 </script>
