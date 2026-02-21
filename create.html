@@ -1,12 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
 <title>単語帳作成</title>
-
-<link rel="stylesheet" href="style.css">
-
+<link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
+<link rel="stylesheet" type="text/css" href="style.css">
 <style>
 body{
   min-height:100vh;
@@ -20,7 +21,6 @@ body{
   border-radius:12px;
   margin-bottom:20px;
 }
-
 input{
   padding:12px;
   border-radius:10px;
@@ -44,11 +44,14 @@ input{
   gap:10px;
   margin-top:10px;
 }
-
 .wordRow input{
   width:200px;
 }
 
+.list{
+  margin-top:20px;
+  text-align:left;
+}
 .wordItem{
   border-bottom:1px solid #ddd;
   padding:6px;
@@ -56,43 +59,40 @@ input{
   justify-content:space-between;
   align-items:center;
 }
-
 .notice{
   color:red;
 }
-
 .smallBtn{
   background:#ff5c5c;
-  border:none;
-  color:white;
   border-radius:6px;
   padding:4px 8px;
   font-size:12px;
-  cursor:pointer;
 }
 </style>
 </head>
 <body>
 
-<h2>単語帳作成</h2>
+<header>
+  <div class="headertitle"><a href="index.html"><img src="./headerrogo.png" height="45px"></a></div>
+</header>
+
+<main>
 
 <div class="card">
-  <h3>単語帳情報</h3>
+  <h2>単語帳情報</h2>
+  <input id="title" placeholder="単語帳タイトル"><br>
 
-  <input id="title" placeholder="単語帳タイトル"><br><br>
-
-  <label>
-    公開する
+  <div class="row">
+    <label for="isPublic">公開する</label>
     <input type="checkbox" id="isPublic" checked>
-  </label>
+  </div>
 
-  <br><br>
   <button onclick="createBook()">単語帳を作成</button>
   <div id="msg" class="notice"></div>
 </div>
 
 <div class="card" id="wordArea" style="display:none">
-  <h3>単語を追加</h3>
+  <h2>単語を追加</h2>
 
   <div class="wordRow">
     <input id="front" placeholder="例：犬">
@@ -101,11 +101,11 @@ input{
 
   <button onclick="addWord()">追加</button>
 
-  <div id="wordList"></div>
+  <div class="list" id="wordList"></div>
 
   <hr>
 
-  <h3>CSV操作</h3>
+  <h3>CSV操作（ファイルのみ）</h3>
   <input type="file" id="csvFile" accept=".csv,.txt"><br><br>
 
   <button onclick="importCSV()">CSV読み込み</button>
@@ -114,6 +114,22 @@ input{
   <br><br>
   <button onclick="goView()">完成して見る</button>
 </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>Vocaboost</div>
+    <div class="footer-links">
+      <a href="index.html">ホーム</a>
+      <a href="list.html">公開単語帳</a>
+      <a href="create.html">作成</a>
+      <a href="mypage.html">マイページ</a>
+      <a href="update.html">更新履歴</a>
+    </div>
+    <div class="copy">© 2026 Wordbook App</div>
+  </div>
+</footer>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -136,7 +152,6 @@ const db=firebase.firestore();
 let currentUser=null;
 let bookId=null;
 
-/* ログイン確認 */
 auth.onAuthStateChanged(user=>{
   if(user){
     currentUser=user;
@@ -146,7 +161,6 @@ auth.onAuthStateChanged(user=>{
   }
 });
 
-/* 単語帳作成 */
 async function createBook(){
   const title=document.getElementById("title").value.trim();
   const isPublic=document.getElementById("isPublic").checked;
@@ -161,8 +175,7 @@ async function createBook(){
     title:title,
     isPublic:isPublic,
     owner:currentUser.uid,
-    ownerName:currentUser.displayName||"名無し",
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    ownerName:currentUser.displayName||"名無し"
   });
 
   bookId = doc.id;
@@ -170,20 +183,15 @@ async function createBook(){
   msg.textContent="単語帳を作成しました。単語を追加してください";
 }
 
-/* 単語追加 */
 async function addWord(){
   const f=document.getElementById("front").value.trim();
   const b=document.getElementById("back").value.trim();
   if(!f||!b||!bookId)return;
 
-  const doc = await db.collection("wordbooks")
-    .doc(bookId)
-    .collection("words")
-    .add({
-      front:f,
-      back:b,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+  const doc = await db.collection("wordbooks").doc(bookId).collection("words").add({
+    front:f,
+    back:b
+  });
 
   addWordToList(doc.id,f,b);
 
@@ -191,34 +199,21 @@ async function addWord(){
   document.getElementById("back").value="";
 }
 
-/* 画面に追加 */
 function addWordToList(id,f,b){
   const div=document.createElement("div");
   div.className="wordItem";
   div.id="word_"+id;
-
-  div.innerHTML = `
-    ${f} → ${b}
-    <button class="smallBtn" onclick="deleteWord('${id}')">削除</button>
-  `;
-
+  div.innerHTML=`${f} → ${b}
+    <button class="smallBtn" onclick="deleteWord('${id}">削除</button>`;
   document.getElementById("wordList").appendChild(div);
 }
 
-/* 削除 */
 async function deleteWord(id){
   if(!confirm("削除しますか？")) return;
-
-  await db.collection("wordbooks")
-    .doc(bookId)
-    .collection("words")
-    .doc(id)
-    .delete();
-
+  await db.collection("wordbooks").doc(bookId).collection("words").doc(id).delete();
   document.getElementById("word_"+id).remove();
 }
 
-/* CSV読み込み */
 async function importCSV(){
   if(!bookId)return;
 
@@ -234,14 +229,10 @@ async function importCSV(){
   for(const line of lines){
     const [f,b]=line.split(",");
     if(f && b){
-      const doc=await db.collection("wordbooks")
-        .doc(bookId)
-        .collection("words")
-        .add({
-          front:f.trim(),
-          back:b.trim()
-        });
-
+      const doc=await db.collection("wordbooks").doc(bookId).collection("words").add({
+        front:f.trim(),
+        back:b.trim()
+      });
       addWordToList(doc.id,f.trim(),b.trim());
     }
   }
@@ -249,16 +240,12 @@ async function importCSV(){
   document.getElementById("csvFile").value="";
 }
 
-/* CSV書き出し */
 async function exportCSV(){
   if(!bookId)return;
 
-  const snap=await db.collection("wordbooks")
-    .doc(bookId)
-    .collection("words")
-    .get();
-
+  const snap=await db.collection("wordbooks").doc(bookId).collection("words").get();
   let csv="";
+
   snap.forEach(d=>{
     const w=d.data();
     csv+=`${w.front},${w.back}\n`;
@@ -274,9 +261,7 @@ async function exportCSV(){
 }
 
 function goView(){
-  if(bookId){
-    location.href="view.html?id="+bookId;
-  }
+  location.href="view.html?id="+bookId;
 }
 </script>
 
