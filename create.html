@@ -26,6 +26,8 @@ input{
   border-radius:10px;
   border:1px solid #ccc;
   font-size:16px;
+  width:80%;
+  max-width:400px;
 }
 
 .row{
@@ -90,7 +92,7 @@ input{
 </div>
 
 <div class="card" id="wordArea" style="display:none">
-  <h3>単語を追加（Enter対応）</h3>
+  <h3>単語を追加</h3>
 
   <div class="wordRow">
     <input id="front" placeholder="例：犬">
@@ -170,11 +172,8 @@ async function createBook(){
 
 /* 単語追加 */
 async function addWord(){
-  const front=document.getElementById("front");
-  const back=document.getElementById("back");
-
-  const f=front.value.trim();
-  const b=back.value.trim();
+  const f=document.getElementById("front").value.trim();
+  const b=document.getElementById("back").value.trim();
   if(!f||!b||!bookId)return;
 
   const doc = await db.collection("wordbooks")
@@ -188,32 +187,9 @@ async function addWord(){
 
   addWordToList(doc.id,f,b);
 
-  front.value="";
-  back.value="";
-  front.focus();
+  document.getElementById("front").value="";
+  document.getElementById("back").value="";
 }
-
-/* Enter操作 */
-document.addEventListener("DOMContentLoaded", ()=>{
-
-  const front=document.getElementById("front");
-  const back=document.getElementById("back");
-
-  front.addEventListener("keydown", e=>{
-    if(e.key==="Enter"){
-      e.preventDefault();
-      back.focus();
-    }
-  });
-
-  back.addEventListener("keydown", e=>{
-    if(e.key==="Enter"){
-      e.preventDefault();
-      addWord();
-    }
-  });
-
-});
 
 /* 画面に追加 */
 function addWordToList(id,f,b){
