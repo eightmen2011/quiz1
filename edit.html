@@ -2,11 +2,11 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
 <title>単語帳編集</title>
-
-<link rel="stylesheet" href="style.css">
-
+<link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
+<link rel="stylesheet" type="text/css" href="style.css">
 <style>
 .card{
   background:white;
@@ -14,7 +14,6 @@
   border-radius:12px;
   margin-bottom:20px;
 }
-
 .wordItem{
   border-bottom:1px solid #ddd;
   padding:10px;
@@ -22,47 +21,84 @@
   justify-content:space-between;
   align-items:center;
 }
-
 .danger{
   background:#ff5c5c;
-  color:white;
-  border:none;
-  padding:5px 10px;
-  border-radius:8px;
-  cursor:pointer;
 }
-
+a{
+  color:#191970;
+  text-decoration:none;
+  font-weight:bold;
+}
+.notice{
+  color:red;
+  margin-top:10px;
+}
 .wordRow{
   display:flex;
+  justify-content:center;
   gap:10px;
   margin-top:10px;
 }
-
 .wordRow input{
   padding:10px;
   border-radius:10px;
   border:1px solid #ccc;
-  width:200px;
+  font-size:14px;
+  width:200px
 }
+
 </style>
 </head>
 <body>
 
-<h2 id="title">読み込み中...</h2>
+<header>
+  <div class="headertitle"><a href="index.html"><img src="./headerrogo.png" height="45px"></a></div>
+</header>
 
-<div class="card">
-  <button class="danger" onclick="deleteBook()">この単語帳を削除</button>
-</div>
+<main>
+  <div class="card">
+    <h2 id="title">読み込み中...</h2>
+    <div id="owner"></div>
+    <button class="danger" onclick="deleteBook()">この単語帳を削除</button>
+    <div id="msg" class="notice"></div>
+  </div>
 
-<div class="card">
-  <h3>単語を追加</h3>
-  <div id="inputArea"></div>
-</div>
+  <div class="card">
+    <h3>単語を追加</h3>
+    <div class="wordRow">
+      <input id="front" placeholder="例：犬">
+      <input id="back" placeholder="例：dog">
+    </div>
+    <button onclick="addWord()">追加</button>
+  </div>
 
-<div class="card">
-  <h3>単語一覧</h3>
-  <div id="wordList"></div>
-</div>
+  <div class="card">
+    <h3>単語一覧</h3>
+    <div id="wordList"></div>
+  </div>
+
+  <!-- CSV操作 -->
+  <div class="card">
+    <h3>CSV操作</h3>
+    <input type="file" id="csvFile" accept=".csv,.txt"><br><br>
+    <button onclick="importCSV()">CSV読み込み</button>
+    <button onclick="exportCSV()">CSV書き出し</button>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>Vocaboost</div>
+    <div class="footer-links">
+      <a href="index.html">ホーム</a>
+      <a href="list.html">公開単語帳</a>
+      <a href="create.html">作成</a>
+      <a href="mypage.html">マイページ</a>
+      <a href="update.html">更新履歴</a>
+    </div>
+    <div class="copy">© 2026 Wordbook App</div>
+  </div>
+</footer>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -79,35 +115,27 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const auth=firebase.auth();
+const db=firebase.firestore();
 
-const params = new URLSearchParams(location.search);
-const bookId = params.get("id");
+const params=new URLSearchParams(location.search);
+const bookId=params.get("id");
 
-if(!bookId){
-  alert("URLにidがありません");
-  throw new Error("bookId missing");
-}
+let currentUser=null;
+let bookOwner=null;
 
-let currentUser = null;
-let bookOwner = null;
-
-/* ===== ログイン確認 ===== */
 auth.onAuthStateChanged(user=>{
   if(!user){
     alert("ログインしてください");
     location.href="login.html";
     return;
   }
-  currentUser = user;
+  currentUser=user;
   loadBook();
 });
 
-/* ===== 単語帳読み込み ===== */
 async function loadBook(){
   const doc = await db.collection("wordbooks").doc(bookId).get();
-
   if(!doc.exists){
     alert("単語帳が見つかりません");
     return;
@@ -117,116 +145,102 @@ async function loadBook(){
   bookOwner = data.owner;
 
   if(currentUser.uid !== bookOwner){
-    alert("編集権限がありません");
+    alert("他人の単語帳は編集できません");
     location.href="view.html?id="+bookId;
     return;
   }
 
   document.getElementById("title").textContent = data.title;
-
-  createInputRow();
   loadWords();
 }
 
-/* ===== 入力欄生成（常に1行） ===== */
-function createInputRow(){
-  const area = document.getElementById("inputArea");
-  area.innerHTML = "";
-
-  const row = document.createElement("div");
-  row.className = "wordRow";
-
-  const frontInput = document.createElement("input");
-  frontInput.placeholder = "例：犬";
-
-  const backInput = document.createElement("input");
-  backInput.placeholder = "例：dog";
-
-  // 左Enter → 右へ
-  frontInput.addEventListener("keydown", e=>{
-    if(e.key === "Enter"){
-      e.preventDefault();
-      backInput.focus();
-    }
-  });
-
-  // 右Enter → 保存
-  backInput.addEventListener("keydown", async e=>{
-    if(e.key === "Enter"){
-      e.preventDefault();
-
-      const f = frontInput.value.trim();
-      const b = backInput.value.trim();
-      if(!f || !b) return;
-
-      try{
-        await db.collection("wordbooks")
-          .doc(bookId)
-          .collection("words")
-          .add({ front:f, back:b });
-
-        loadWords();
-        createInputRow(); // 再生成
-      }catch(err){
-        console.error(err);
-        alert("保存エラー");
-      }
-    }
-  });
-
-  row.appendChild(frontInput);
-  row.appendChild(backInput);
-  area.appendChild(row);
-
-  frontInput.focus();
-}
-
-/* ===== 単語一覧 ===== */
 async function loadWords(){
-  const snap = await db.collection("wordbooks")
-    .doc(bookId)
-    .collection("words")
-    .get();
-
+  const snap = await db.collection("wordbooks").doc(bookId).collection("words").get();
   const area = document.getElementById("wordList");
-  area.innerHTML = "";
+  area.innerHTML="";
 
   snap.forEach(doc=>{
     const w = doc.data();
-
-    const div = document.createElement("div");
-    div.className = "wordItem";
-    div.id = "word_" + doc.id;
-
-    div.innerHTML = `
+    const div=document.createElement("div");
+    div.className="wordItem";
+    div.id="word_"+doc.id;
+    div.innerHTML=`
       ${w.front} → ${w.back}
-      <button class="danger" onclick="deleteWord('${doc.id}')">削除</button>
+      <button class="danger" onclick="deleteWord('${doc.id}">削除</button>
     `;
-
     area.appendChild(div);
   });
 }
 
-/* ===== 単語削除 ===== */
-async function deleteWord(id){
-  if(!confirm("削除しますか？")) return;
+async function addWord(){
+  const f=document.getElementById("front").value.trim();
+  const b=document.getElementById("back").value.trim();
+  if(!f || !b) return;
 
-  await db.collection("wordbooks")
-    .doc(bookId)
-    .collection("words")
-    .doc(id)
-    .delete();
+  await db.collection("wordbooks").doc(bookId).collection("words").add({
+    front:f,
+    back:b
+  });
+
+  document.getElementById("front").value="";
+  document.getElementById("back").value="";
 
   loadWords();
 }
 
-/* ===== 単語帳削除 ===== */
+async function deleteWord(id){
+  if(!confirm("この単語を削除しますか？")) return;
+
+  await db.collection("wordbooks").doc(bookId).collection("words").doc(id).delete();
+  document.getElementById("word_"+id).remove();
+}
+
 async function deleteBook(){
-  if(!confirm("本当に削除しますか？")) return;
+  if(!confirm("単語帳を完全に削除しますか？")) return;
 
   await db.collection("wordbooks").doc(bookId).delete();
   alert("削除しました");
   location.href="index.html";
+}
+
+/* ===== CSV 読み込み ===== */
+async function importCSV(){
+  const file=document.getElementById("csvFile").files[0];
+  if(!file) return alert("CSVファイルを選択してください");
+
+  const text = await file.text();
+  const lines = text.trim().split("\n");
+
+  for(const line of lines){
+    const [f,b] = line.split(",");
+    if(f && b){
+      await db.collection("wordbooks").doc(bookId).collection("words").add({
+        front: f.trim(),
+        back: b.trim()
+      });
+    }
+  }
+  alert("CSV読み込み完了");
+  loadWords();
+}
+
+/* ===== CSV 書き出し ===== */
+async function exportCSV(){
+  const snap = await db.collection("wordbooks").doc(bookId).collection("words").get();
+  let csv="";
+
+  snap.forEach(doc=>{
+    const w=doc.data();
+    csv += `${w.front},${w.back}\n`;
+  });
+
+  const blob = new Blob([csv],{type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="words.csv";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 </script>
 
