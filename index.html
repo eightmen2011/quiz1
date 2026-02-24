@@ -88,10 +88,21 @@
     <button onclick="goPage('create.html')">＋作成</button>
     <button onclick="goPage('list.html')">一覧</button>
   </div>
+  <div id="dashboard" style="display:none">
+    <div id="myBooks" class="list">
+      <h2>自分の単語帳</h2>
+      <div id="bookList"></div>
+    </div>
+    <div id="noticeBox" class="list">
+      <h2>🔔 お知らせ</h2>
+      <ul id="noticeList">
+        <li>単語帳の作成、編集時に単語の削除ができなくなっています。申し訳ございません。</li>
+      	<li>追加してほしい機能があれば<a href="https://forms.gle/FUNCVXWj4sJoALd26">こちら</a>からお願いします。</li>
+      	<li>近日中に違うリンクで公開する予定です。メールアドレス、パスワードを新たに設定する必要はありません。</li>
+	      <li>このサイトの名前を募集します！<a href = "https://forms.gle/QgdZ96aAXr59si9L9">こちら</a>から</li>
+      </ul>
+    </div>
 
-  <div id="myBooks" class="list" style="display:none">
-    <h2>自分の単語帳</h2>
-    <div id="bookList"></div>
   </div>
 </main>
 
@@ -132,7 +143,7 @@ const statusDiv = document.getElementById("status");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const mypageBtn = document.getElementById("mypageBtn");
-const myBooksDiv = document.getElementById("myBooks");
+const dashboardDiv = document.getElementById("dashboard");
 const bookListDiv = document.getElementById("bookList");
 
 let currentUser = null;
@@ -144,13 +155,14 @@ auth.onAuthStateChanged(user=>{
     loginBtn.style.display="none";
     logoutBtn.style.display="inline-block";
     mypageBtn.style.display="inline-block";
+    dashboardDiv.style.display="flex";
     loadMyBooks(user.uid);
   }else{
     statusDiv.textContent = "ログアウト中";
     loginBtn.style.display="inline-block";
     logoutBtn.style.display="none";
     mypageBtn.style.display="none";
-    myBooksDiv.style.display="none";
+    dashboardDiv.style.display="none";
   }
 });
 
