@@ -189,7 +189,6 @@ function loadMyBooks(uid){
     .get()
     .then(snapshot=>{
       bookListDiv.innerHTML="";
-      myBooksDiv.style.display="block";
 
       if(snapshot.empty){
         bookListDiv.innerHTML="<p>まだ単語帳がありません</p>";
