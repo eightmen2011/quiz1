@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -8,13 +7,13 @@
 <link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <link rel="stylesheet" type="text/css" href="style.css">
+
 <style>
 body{
   min-height:100vh;
   display:flex;
   flex-direction:column;
 }
-
 .card{
   background:white;
   padding:25px;
@@ -29,7 +28,6 @@ input{
   width:80%;
   max-width:400px;
 }
-
 .row{
   display:flex;
   justify-content:center;
@@ -37,7 +35,6 @@ input{
   gap:5px;
   margin-top:15px;
 }
-
 .wordRow{
   display:flex;
   justify-content:center;
@@ -47,7 +44,6 @@ input{
 .wordRow input{
   width:200px;
 }
-
 .list{
   margin-top:20px;
   text-align:left;
@@ -67,13 +63,20 @@ input{
   border-radius:6px;
   padding:4px 8px;
   font-size:12px;
+  color:white;
+  border:none;
+  cursor:pointer;
 }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="headertitle"><a href="index.html"><img src="./headerrogo.png" height="45px"></a></div>
+  <div class="headertitle">
+    <a href="index.html">
+      <img src="./headerrogo.png" height="45px">
+    </a>
+  </div>
 </header>
 
 <main>
@@ -175,7 +178,8 @@ async function createBook(){
     title:title,
     isPublic:isPublic,
     owner:currentUser.uid,
-    ownerName:currentUser.displayName||"名無し"
+    ownerName:currentUser.displayName||"名無し",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp() // ★ 作成時間追加
   });
 
   bookId = doc.id;
@@ -190,7 +194,8 @@ async function addWord(){
 
   const doc = await db.collection("wordbooks").doc(bookId).collection("words").add({
     front:f,
-    back:b
+    back:b,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp() // 単語の追加時間も保存
   });
 
   addWordToList(doc.id,f,b);
@@ -204,7 +209,7 @@ function addWordToList(id,f,b){
   div.className="wordItem";
   div.id="word_"+id;
   div.innerHTML=`${f} → ${b}
-    <button class="smallBtn" onclick="deleteWord('${id}">削除</button>`;
+    <button class="smallBtn" onclick="deleteWord('${id}')">削除</button>`;
   document.getElementById("wordList").appendChild(div);
 }
 
@@ -231,7 +236,8 @@ async function importCSV(){
     if(f && b){
       const doc=await db.collection("wordbooks").doc(bookId).collection("words").add({
         front:f.trim(),
-        back:b.trim()
+        back:b.trim(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       addWordToList(doc.id,f.trim(),b.trim());
     }
