@@ -2,22 +2,23 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>マイページ</title>
-<link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
-<link rel="icon" type="image/x-icon" href="./favicon.ico">
+
 <link rel="stylesheet" type="text/css" href="style.css">
+
 <style>
 body{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
+  margin:0;
+  font-family:sans-serif;
+  background:#eef2ff;
 }
 .card{
   background:white;
   padding:25px;
   border-radius:12px;
-  margin-bottom:20px;
+  margin:20px auto;
+  max-width:900px;
 }
 input{
   padding:10px;
@@ -26,18 +27,23 @@ input{
   width:100%;
   margin-top:8px;
 }
-.notice{
-  color:red;
-}
-.success{
-  color:green;
+.notice{ color:red; }
+.success{ color:green; }
+button{
+  margin-top:10px;
+  padding:8px 14px;
+  border:none;
+  border-radius:6px;
+  background:#4f7cff;
+  color:white;
+  cursor:pointer;
 }
 </style>
 </head>
 <body>
 
 <header>
-  <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
+  <h2 style="text-align:center">マイページ</h2>
 </header>
 
 <main>
@@ -67,63 +73,69 @@ input{
 
 </main>
 
-<footer>
-  <div class="footer-inner">
-    <div class="footertitle">単語帳(名前募集中)</div>
-    <div class="footer-links">
-      <a href="index.html">ホーム</a>
-      <a href="list.html">検索</a>
-      <a href="create.html">作成</a>
-      <a href="mypage.html">マイページ</a>
-      <a href="update.html">更新履歴</a>
-    </div>
-    <div class="copy">© 2026 TEAM-Minimal</div>
-  </div>
+<footer style="text-align:center;margin:30px 0;">
+© 2026 TEAM-Minimal
 </footer>
 
-
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
+/* ===== Firebase設定（完全版） ===== */
 const firebaseConfig = {
   apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
   authDomain: "quiz1-4ffdc.firebaseapp.com",
-  projectId: "quiz1-4ffdc"
+  projectId: "quiz1-4ffdc",
+  storageBucket: "quiz1-4ffdc.firebasestorage.app",
+  messagingSenderId: "152062126332",
+  appId: "1:152062126332:web:845af237a1a76207214f79"
 };
+
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.firestore();
 let currentUser = null;
 
+/* ===== ログインチェック ===== */
 auth.onAuthStateChanged(async user=>{
   if(!user){
     location.href="login.html";
-  }else{
-    currentUser = user;
-    document.getElementById("uid").textContent = user.uid;
-    document.getElementById("email").textContent = user.email;
-    document.getElementById("usernameText").textContent = user.displayName || "未設定";
-
-    loadBookCount();
+    return;
   }
+
+  currentUser = user;
+
+  document.getElementById("uid").textContent = user.uid;
+  document.getElementById("email").textContent = user.email;
+  document.getElementById("usernameText").textContent = user.displayName || "未設定";
+
+  loadBookCount();
 });
 
+/* ===== 作成単語帳数 ===== */
 async function loadBookCount(){
-  const snap = await db.collection("wordbooks")
-    .where("owner","==",currentUser.uid)
-    .get();
-  document.getElementById("bookCount").textContent = snap.size;
+  try{
+    const snap = await db.collection("wordbooks")
+      .where("owner","==",currentUser.uid)
+      .get();
+
+    document.getElementById("bookCount").textContent = snap.size;
+  }catch(e){
+    console.error(e);
+  }
 }
 
+/* ===== ユーザー名変更 ===== */
 async function updateUsername(){
   const newName = document.getElementById("usernameInput").value.trim();
   const msg = document.getElementById("nameMsg");
 
   if(!newName){
     msg.textContent = "ユーザー名を入力してください";
+    msg.className="notice";
     return;
   }
 
@@ -132,7 +144,6 @@ async function updateUsername(){
       displayName: newName
     });
 
-    // Firestoreにも保存（単語帳表示用）
     await db.collection("users").doc(currentUser.uid).set({
       username: newName
     });
@@ -147,6 +158,7 @@ async function updateUsername(){
   }
 }
 
+/* ===== パスワード変更 ===== */
 async function changePassword(){
   const current=document.getElementById("currentPass").value;
   const newPass=document.getElementById("newPass").value;
@@ -154,6 +166,7 @@ async function changePassword(){
 
   if(!current || !newPass){
     msg.textContent="すべて入力してください";
+    msg.className="notice";
     return;
   }
 
@@ -168,6 +181,7 @@ async function changePassword(){
 
     msg.textContent="パスワードを変更しました";
     msg.className="success";
+
     document.getElementById("currentPass").value="";
     document.getElementById("newPass").value="";
   }catch(e){
