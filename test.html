@@ -8,10 +8,16 @@
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <link rel="stylesheet" type="text/css" href="style.css">
 <style>
+.main{
+  margin:0;
+  padding:0;
+  width:100%;
+  flex:1;
+}
 .card{
   background:white;
   max-width:600px;
-  margin:40px auto;
+  margin:30px auto;
   padding:30px;
   border-radius:12px;
   text-align:center;
@@ -32,15 +38,39 @@ button{
 label{
   font-size:14px;
 }
+#quiz{
+  min-height:280px; 
+}
+#end{
+  height:280px;
+}
+#score{
+  font-size:20px;
+}
+#resultfont{
+  font-size: 30px;
+  font-weight: bold;
+}
+#q{
+  font-size: 30px;
+}
+#result{
+  font-size: 20px;
+}
+#start{
+  width:50%;
+  height:280px;
+}
 </style>
 </head>
 <body>
 
 <header>
-  <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
+  <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
 </header>
 
 <!-- 設定画面 -->
+<div class="main" class="start">
 <div class="card" id="start">
   <h2>テスト設定</h2>
 
@@ -54,34 +84,38 @@ label{
   <button onclick="startTest()">▶ スタート</button>
   <p id="startMsg" style="color:red"></p>
 </div>
-
+</div>
 <!-- クイズ -->
+<div class="main">
 <div class="card" id="quiz" style="display:none">
   <h2 id="q"></h2>
-  <input id="ans" placeholder="答えを入力">
+  <input id="ans" placeholder="答えを入力"><br>
   <p id="result"></p>
   <button onclick="check()">回答 (Enter)</button>
 </div>
+</div>
 
 <!-- 結果 -->
+<div class="main">
 <div class="card" id="end" style="display:none">
-  <h2>結果</h2>
+  <p id="resultfont">結果</p>
   <p id="score"></p>
   <button onclick="restart()">もう一回</button>
   <button onclick="location.href='index.html'">戻る</button>
 </div>
+</div>
 
 <footer>
   <div class="footer-inner">
-    <div class="footertitle">単語帳(名前募集中)</div>
+    <div>単語帳アプリ</div>
     <div class="footer-links">
       <a href="index.html">ホーム</a>
-      <a href="list.html">検索</a>
+      <a href="list.html">公開単語帳</a>
       <a href="create.html">作成</a>
       <a href="mypage.html">マイページ</a>
       <a href="update.html">更新履歴</a>
     </div>
-    <div class="copy">© 2026 TEAM-Minimal</div>
+    <div class="copy">© 2026 Wordbook App</div>
   </div>
 </footer>
 
