@@ -2,8 +2,10 @@ body{
   margin:0;
   font-family:sans-serif;
   background:#eef2ff;
+  display: flex;
+  flex-flow: column;
+  min-height: 100vh;
 }
-
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200..900&display=swap');
 header{
   font-family: "Noto Serif JP", serif;
@@ -50,11 +52,6 @@ footer{
   color:white;
   padding:15px 0;
   line-height:2.0;
-}
-
-. footertitle{
-  font-size:17px;
-  font-family: "Noto Serif JP", serif;
 }
 
 .footer-inner{
