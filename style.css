@@ -75,8 +75,8 @@ footer{
   font-size:12px;
   opacity:0.8;
 }
-.footernewname a{
-  text-decoration:none;
-  font-weight:normal;
-  color:#FFFFFF;
+.footernewname{
+  color: white !important;
+  font-weight:normal !important;
+  text-decoration: none !important;
 }
