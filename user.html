@@ -2,11 +2,9 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <title>ユーザー情報</title>
-<link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
-<link rel="icon" type="image/x-icon" href="./favicon.ico">
-<link rel="stylesheet" type="text/css" href="style.css">
+<link rel="stylesheet" href="style.css">
 
 <style>
 .card{
@@ -63,7 +61,7 @@ main{
 <footer>
   <div class="footer-inner">
     <div class="footertitle">
-      単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a>
+      単語帳<a href="./newname.html">(名前募集中)</a>
     </div>
     <div class="footer-links">
       <a href="index.html">ホーム</a>
@@ -81,6 +79,8 @@ main{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
+document.addEventListener("DOMContentLoaded", function(){
+
 const firebaseConfig = {
   apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
   authDomain: "quiz1-4ffdc.firebaseapp.com",
@@ -100,8 +100,10 @@ const userNameText = document.getElementById("userNameText");
 const bookList = document.getElementById("bookList");
 
 if(!uid){
-  userNameText.textContent = "ユーザーIDがありません";
-  throw new Error("uid missing");
+  if(userNameText){
+    userNameText.textContent = "ユーザーIDがありません";
+  }
+  return;
 }
 
 async function loadUser(){
@@ -109,20 +111,26 @@ async function loadUser(){
     const userDoc = await db.collection("users").doc(uid).get();
 
     if(!userDoc.exists){
-      userNameText.textContent = "ユーザーが見つかりません";
+      if(userNameText){
+        userNameText.textContent = "ユーザーが見つかりません";
+      }
       return;
     }
 
     const userData = userDoc.data();
     const username = userData.username || "名無し";
 
-    userNameText.textContent = "ユーザー名: " + username;
+    if(userNameText){
+      userNameText.textContent = "ユーザー名: " + username;
+    }
 
     loadBooks(username);
 
   }catch(e){
-    userNameText.textContent = "読み込みエラー";
     console.error(e);
+    if(userNameText){
+      userNameText.textContent = "読み込みエラー";
+    }
   }
 }
 
@@ -133,6 +141,8 @@ async function loadBooks(username){
       .where("isPublic","==",true)
       .get();
 
+    if(!bookList) return;
+
     if(snap.empty){
       bookList.innerHTML = "<p>公開単語帳はありません</p>";
       return;
@@ -142,20 +152,30 @@ async function loadBooks(username){
       const b = doc.data();
       const div = document.createElement("div");
       div.className = "wordbook";
-      div.innerHTML = `
-        <span>${b.title}</span>
-        <a href="view.html?id=${doc.id}">開く</a>
-      `;
+
+      const span = document.createElement("span");
+      span.textContent = b.title;
+
+      const link = document.createElement("a");
+      link.href = "view.html?id=" + doc.id;
+      link.textContent = "開く";
+
+      div.appendChild(span);
+      div.appendChild(link);
       bookList.appendChild(div);
     });
 
   }catch(e){
-    bookList.innerHTML = "<p>単語帳の読み込みに失敗しました</p>";
     console.error(e);
+    if(bookList){
+      bookList.innerHTML = "<p>単語帳の読み込みに失敗しました</p>";
+    }
   }
 }
 
 loadUser();
+
+});
 </script>
 
 </body>
