@@ -15,11 +15,13 @@ const urlsToCache = [
   './update.html',
   './user.html',
   './view.html',
+  './contact.html',
   './css/style.css',
   './login.css',
-  './images/a.jpg',
-  './images/b.jpg',
-  './images/c.jpg',
+  './icon.png',
+  './to-create.jpeg',
+  './to-list.jpeg',
+  './favicon.ico',
 ];
 
 self.addEventListener('install', (event) => {
