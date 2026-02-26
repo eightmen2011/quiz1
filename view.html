@@ -8,6 +8,9 @@
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <link rel="stylesheet" type="text/css" href="style.css">
 <style>
+.main{
+  flex:1;
+}
 .card{
   background:white;
   max-width:600px;
@@ -15,12 +18,17 @@
   padding:20px;
   border-radius:10px;
   align-items: center;
+  min-height:500px;
+}
+#title{
+  text-align: center;
+  font-size:25px;
 }
 
-.btn3{
+#btn3{
   display:flex;
   align-items:center;
-  width:80%;
+  text-align: center;
 }
 a.btn{
   background:white;
@@ -44,30 +52,31 @@ a.btn{
 <body>
 
 <header>
-  <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
+  <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
+  </div>
 </header>
-
+<div class="main">
 <div class="card">
   <h2 id="title"></h2>
-  <div class="btn3">
+  <div id="btn3">
     <a class="btn" id="editBtn" style="display:none">編集</a>
     <a class="btn" id="flashBtn">暗記</a>
     <a class="btn" id="testBtn">テスト</a>
   </div>
   <div id="words"></div>
 </div>
-
+</div>
 <footer>
   <div class="footer-inner">
-    <div class="footertitle">単語帳(名前募集中)</div>
+    <div>単語帳アプリ</div>
     <div class="footer-links">
       <a href="index.html">ホーム</a>
-      <a href="list.html">検索</a>
+      <a href="list.html">公開単語帳</a>
       <a href="create.html">作成</a>
       <a href="mypage.html">マイページ</a>
       <a href="update.html">更新履歴</a>
     </div>
-    <div class="copy">© 2026 TEAM-Minimal</div>
+    <div class="copy">© 2026 Wordbook App</div>
   </div>
 </footer>
 
