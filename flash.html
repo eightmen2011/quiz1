@@ -15,15 +15,19 @@
   padding:30px;
   border-radius:12px;
   text-align:center;
+  min-height: 200px;
+}
+#back{
+  font-size:25px;
 }
 </style>
 </head>
 <body>
 
 <header>
-  <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
+  <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
 </header>
-
+<main>
 <div class="card">
   <h2 id="front"></h2>
   <p id="back" style="display:none"></p>
@@ -35,18 +39,18 @@
   <button onclick="restart()">もう一回</button>
   <button onclick="location.href='index.html'">戻る</button>
 </div>
-
+</main>
 <footer>
   <div class="footer-inner">
-    <div class="footertitle">単語帳(名前募集中)</div>
+    <div>単語帳アプリ</div>
     <div class="footer-links">
       <a href="index.html">ホーム</a>
-      <a href="list.html">検索</a>
+      <a href="list.html">公開単語帳</a>
       <a href="create.html">作成</a>
       <a href="mypage.html">マイページ</a>
       <a href="update.html">更新履歴</a>
     </div>
-    <div class="copy">© 2026 TEAM-Minimal</div>
+    <div class="copy">© 2026 Wordbook App</div>
   </div>
 </footer>
 
