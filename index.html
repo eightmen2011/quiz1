@@ -74,13 +74,17 @@
   }
   #dashboard{
     display:flex;
-    gap:60px;
+    gap:20px;
     justify-content:center;
     flex-wrap:wrap;
-    width:887.39;
+    width:1000px;
   }
-  #myBooks, #noticeBox{
-    width:400px;
+  #myBooks{
+    width:450px;
+    min-height:200px;
+  }
+  #noticeBox{
+    width:450px;
     min-height:200px;
   }
   #noticeBox ul{
@@ -103,7 +107,7 @@
 <body>
 
 <header>
-  <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
+  <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
   <div id="status" style="display:none">ログイン確認中...</div>
   <div>
     <button id="mypageBtn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
@@ -137,7 +141,7 @@
 
 <footer>
   <div class="footer-inner">
-    <div>単語帳アプリ</div>
+    <div>単語帳(名前募集中)</div>
     <div class="footer-links">
       <a href="#" onclick="goPage('index.html')">ホーム</a>
       <a href="#" onclick="goPage('list.html')">公開単語帳</a>
@@ -145,7 +149,7 @@
       <a href="#" onclick="goPage('mypage.html')">マイページ</a>
       <a href="#" onclick="goPage('update.html')">更新履歴</a>
     </div>
-    <div class="copy">© 2026 Wordbook App</div>
+    <div class="copy">© 2026 TEAM-Minimal</div>
   </div>
 </footer>
 
