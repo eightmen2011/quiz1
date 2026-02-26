@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
   <link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
   <link rel="icon" type="image/x-icon" href="./favicon.ico">
-  <title>Vocaboost</title>
+  <title>単語帳</title>
   <link rel="manifest" href="./manifest.json">
   <link rel="stylesheet" type="text/css" href="style.css">
   <script>
@@ -22,6 +22,10 @@
     background:white;
     padding:25px;
     border-radius:12px;
+    align-items: center;
+    display: flex;
+    text-align: center;
+    justify-content: center;
   }
   .list{
     background:white;
@@ -70,9 +74,10 @@
   }
   #dashboard{
     display:flex;
-    gap:20px;
+    gap:60px;
     justify-content:center;
     flex-wrap:wrap;
+    width:887.39;
   }
   #myBooks, #noticeBox{
     width:400px;
@@ -85,12 +90,20 @@
   #noticeBox li{
     margin-bottom:8px;
   }
+  .maincard{
+    font-size:20px;
+    border: solid 2px #191970;
+    background-color: #FFFFFF;
+    color:#191970;
+    width:40%;
+    height:100px;
+  }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="headertitle"><a href="index.html"><img src="./headerrogo.png" height="45px"></a></div>
+  <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
   <div id="status" style="display:none">ログイン確認中...</div>
   <div>
     <button id="mypageBtn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
@@ -101,9 +114,8 @@
 
 <main>
   <div class="card">
-    <h1>Vocaboost</h1>
-    <button onclick="goPage('create.html')">＋作成</button>
-    <button onclick="goPage('list.html')">一覧</button>
+    <button onclick="goPage('create.html')" class="maincard"><img src="./to-create.jpeg" width="60px"><br>＋作成</button>
+    <button onclick="goPage('list.html')" class="maincard"><img src="./to-list.jpeg" width="90px"><br>検索</button>
   </div>
   <div id="dashboard" style="display:none">
     <div id="myBooks" class="list">
@@ -125,7 +137,7 @@
 
 <footer>
   <div class="footer-inner">
-    <div>Vocaboost</div>
+    <div>単語帳アプリ</div>
     <div class="footer-links">
       <a href="#" onclick="goPage('index.html')">ホーム</a>
       <a href="#" onclick="goPage('list.html')">公開単語帳</a>
