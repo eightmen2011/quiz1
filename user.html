@@ -7,6 +7,7 @@
 <link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <link rel="stylesheet" type="text/css" href="style.css">
+
 <style>
 .card{
   background:white;
@@ -25,7 +26,6 @@ a{
   color:#191970;
   font-weight:bold;
 }
-
 html, body{
   height:100%;
   margin:0;
@@ -37,13 +37,15 @@ body{
 main{
   flex:1;
 }
-
 </style>
 </head>
+
 <body>
 
 <header>
-  <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
+  <p class="headertitle">
+    <a href="index.html">単語帳(名前募集中)</a>
+  </p>
 </header>
 
 <main>
@@ -60,7 +62,9 @@ main{
 
 <footer>
   <div class="footer-inner">
-    <div class="footertitle">単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
+    <div class="footertitle">
+      単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a>
+    </div>
     <div class="footer-links">
       <a href="index.html">ホーム</a>
       <a href="list.html">検索</a>
@@ -93,7 +97,6 @@ const params = new URLSearchParams(location.search);
 const uid = params.get("id");
 
 const userNameText = document.getElementById("userNameText");
-const headerName = document.getElementById("username");
 const bookList = document.getElementById("bookList");
 
 if(!uid){
@@ -114,7 +117,6 @@ async function loadUser(){
     const username = userData.username || "名無し";
 
     userNameText.textContent = "ユーザー名: " + username;
-    headerName.textContent = username;
 
     loadBooks(username);
 
@@ -125,26 +127,32 @@ async function loadUser(){
 }
 
 async function loadBooks(username){
-  const snap = await db.collection("wordbooks")
-    .where("ownerName","==",username)
-    .where("isPublic","==",true)
-    .get();
+  try{
+    const snap = await db.collection("wordbooks")
+      .where("ownerName","==",username)
+      .where("isPublic","==",true)
+      .get();
 
-  if(snap.empty){
-    bookList.innerHTML = "<p>公開単語帳はありません</p>";
-    return;
+    if(snap.empty){
+      bookList.innerHTML = "<p>公開単語帳はありません</p>";
+      return;
+    }
+
+    snap.forEach(doc=>{
+      const b = doc.data();
+      const div = document.createElement("div");
+      div.className = "wordbook";
+      div.innerHTML = `
+        <span>${b.title}</span>
+        <a href="view.html?id=${doc.id}">開く</a>
+      `;
+      bookList.appendChild(div);
+    });
+
+  }catch(e){
+    bookList.innerHTML = "<p>単語帳の読み込みに失敗しました</p>";
+    console.error(e);
   }
-
-  snap.forEach(doc=>{
-    const b = doc.data();
-    const div = document.createElement("div");
-    div.className = "wordbook";
-    div.innerHTML = `
-      <span>${b.title}</span>
-      <a href="view.html?id=${doc.id}">開く</a>
-    `;
-    bookList.appendChild(div);
-  });
 }
 
 loadUser();
