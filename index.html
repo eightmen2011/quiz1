@@ -138,11 +138,8 @@
 </head>
 
 <body>
-
   <script src="//accaii.com/quiz1/script.js" async></script><noscript><img
       src="//accaii.com/quiz1/script?guid=on"></noscript>
-
-
   <header>
     <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
     <div id="status" style="display:none">ログイン確認中...</div>
@@ -159,7 +156,11 @@
       <button onclick="goPage('list.html')" class="maincard2"><img src="./to-list.jpeg" width="90px"><br>検索</button>
     </div>
     <div id="dashboard" style="display:none">
-      <div id="myBooks" class="list">
+      <div id="myBooks" class="list" style="position: relative;">
+        <div id="loading-overlay">
+          <div class="spinner"></div>
+          <div class="loading-text">読み込み中...</div>
+        </div>
         <h2>自分の単語帳</h2>
         <div id="bookList"></div>
       </div>
@@ -237,7 +238,15 @@
         mypageBtn.style.display = "none";
         dashboardDiv.style.display = "none";
       }
+      hideLoading();
     });
+
+    function hideLoading() {
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) {
+        overlay.classList.add('hidden');
+      }
+    }
 
     function goPage(page) {
       if (page === "index.html") {

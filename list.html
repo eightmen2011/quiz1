@@ -68,7 +68,6 @@
 </head>
 
 <body>
-
   <header>
     <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
   </header>
@@ -88,7 +87,12 @@
       </select>
     </div>
 
-    <div id="list"></div>
+    <div id="list" style="position: relative; min-height: 200px;">
+      <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">読み込み中...</div>
+      </div>
+    </div>
   </main>
 
   <footer>
@@ -163,6 +167,14 @@
       }));
 
       render();
+      hideLoading();
+    }
+
+    function hideLoading() {
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) {
+        overlay.classList.add('hidden');
+      }
     }
 
     function showBooks() {
