@@ -86,7 +86,13 @@ a{
     <button onclick="exportCSV()">CSV書き出し</button>
   </div>
 
+  <!-- 追加：保存ボタン -->
+  <div class="card" style="text-align:center;">
+    <button onclick="saveBook()">保存</button>
+  </div>
+
 </main>
+
 <footer>
   <div class="footer-inner">
     <div>単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
@@ -101,6 +107,7 @@ a{
     <div class="copy">© 2026 TEAM-Minimal</div>
   </div>
 </footer>
+
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -204,7 +211,6 @@ async function addWord(){
 
 async function deleteWord(id){
   if(!confirm("この単語を削除しますか？")) return;
-
   await db.collection("wordbooks").doc(bookId).collection("words").doc(id).delete();
   document.getElementById("word_"+id)?.remove();
 }
@@ -224,6 +230,14 @@ async function deleteBook(){
 
   alert("削除しました");
   location.href="index.html";
+}
+
+async function saveBook(){
+  await db.collection("wordbooks").doc(bookId).update({
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  alert("保存しました");
 }
 
 /* CSV読み込み */
