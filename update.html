@@ -37,18 +37,25 @@
 
   <header>
     <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
+    <div id="status" style="display:none">ログイン確認中...</div>
+    <div>
+      <button id="mypageBtn" class="header-btn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
+      <button id="loginBtn" class="header-btn" onclick="location.href='login.html'">ログイン</button>
+      <button id="logoutBtn" class="header-btn" style="display:none" onclick="logout()">ログアウト</button>
+    </div>
   </header>
 
   <main>
 
 
     <div class="card">
-      <div class="version">v1.2.0</div>
+      <div class="version">v1.1.1</div>
       <div class="date">2026/3/4</div>
       <ul>
         <li>検索ページに読み込み中アニメーションを追加</li>
         <li>検索ページに並び替え機能を追加</li>
-        <li></li>
+        <li>パスワード変更で新しいパスワードを2回要求するように変更</li>
+        <li>全ページにマイページ/ログアウトボタンを実装</li>
       </ul>
     </div>
 
@@ -97,6 +104,56 @@
       <div class="copy">© 2026 TEAM-Minimal, Shiratae</div>
     </div>
   </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
+      authDomain: "quiz1-4ffdc.firebaseapp.com",
+      projectId: "quiz1-4ffdc"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    let currentUser = null;
+
+    const statusDiv = document.getElementById("status");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const mypageBtn = document.getElementById("mypageBtn");
+
+    auth.onAuthStateChanged(user => {
+      currentUser = user;
+      if (user) {
+        statusDiv.textContent = "ログイン中: " + user.uid;
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        mypageBtn.style.display = "inline-block";
+      } else {
+        statusDiv.textContent = "ログアウト中";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        mypageBtn.style.display = "none";
+      }
+    });
+
+    function goPage(page) {
+      if (page === "index.html") {
+        location.href = "index.html";
+        return;
+      }
+      if (currentUser) {
+        location.href = page;
+      } else {
+        alert("ログインしてください");
+        location.href = "login.html";
+      }
+    }
+
+    function logout() {
+      auth.signOut();
+    }
+  </script>
 
 </body>
 

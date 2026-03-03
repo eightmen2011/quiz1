@@ -59,6 +59,12 @@
 
   <header>
     <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
+    <div id="status" style="display:none">ログイン確認中...</div>
+    <div>
+      <button id="mypageBtn" class="header-btn" style="display:none"
+        onclick="window.goPage('mypage.html')">マイページ</button>
+      <button id="loginBtn" class="header-btn" onclick="location.href='login.html'">ログイン</button>
+      <button id="logoutBtn" class="header-btn" style="display:none" onclick="window.logout()">ログアウト</button>
     </div>
   </header>
   <div class="main">
@@ -100,6 +106,29 @@
 
     const id = new URLSearchParams(location.search).get("id");
     let owner;
+    let currentUser = null;
+
+    const statusDiv = document.getElementById("status");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const mypageBtn = document.getElementById("mypageBtn");
+
+    window.goPage = (page) => {
+      if (page === "index.html") {
+        location.href = "index.html";
+        return;
+      }
+      if (currentUser) {
+        location.href = page;
+      } else {
+        alert("ログインしてください");
+        location.href = "login.html";
+      }
+    };
+
+    window.logout = () => {
+      auth.signOut();
+    };
 
     const bookSnap = await getDoc(doc(db, "wordbooks", id));
     const book = bookSnap.data();
@@ -115,9 +144,22 @@
     testBtn.href = `test.html?id=${id}`;
 
     onAuthStateChanged(auth, user => {
-      if (user && user.uid === owner) {
-        editBtn.style.display = "inline";
-        editBtn.href = `edit.html?id=${id}`;
+      currentUser = user;
+      if (user) {
+        statusDiv.textContent = "ログイン中: " + user.uid;
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        mypageBtn.style.display = "inline-block";
+
+        if (user.uid === owner) {
+          editBtn.style.display = "inline";
+          editBtn.href = `edit.html?id=${id}`;
+        }
+      } else {
+        statusDiv.textContent = "ログアウト中";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        mypageBtn.style.display = "none";
       }
     });
   </script>

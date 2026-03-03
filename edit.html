@@ -61,6 +61,12 @@
 
   <header>
     <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
+    <div id="status" style="display:none">ログイン確認中...</div>
+    <div>
+      <button id="mypageBtn" class="header-btn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
+      <button id="loginBtn" class="header-btn" onclick="location.href='login.html'">ログイン</button>
+      <button id="logoutBtn" class="header-btn" style="display:none" onclick="logout()">ログアウト</button>
+    </div>
   </header>
 
   <main>
@@ -141,15 +147,45 @@
     let currentUser = null;
     let bookOwner = null;
 
+    const statusDiv = document.getElementById("status");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const mypageBtn = document.getElementById("mypageBtn");
+
     auth.onAuthStateChanged(user => {
-      if (!user) {
+      currentUser = user;
+      if (user) {
+        statusDiv.textContent = "ログイン中: " + user.uid;
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        mypageBtn.style.display = "inline-block";
+        loadBook();
+      } else {
+        statusDiv.textContent = "ログアウト中";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        mypageBtn.style.display = "none";
         alert("ログインしてください");
         location.href = "login.html";
+      }
+    });
+
+    function goPage(page) {
+      if (page === "index.html") {
+        location.href = "index.html";
         return;
       }
-      currentUser = user;
-      loadBook();
-    });
+      if (currentUser) {
+        location.href = page;
+      } else {
+        alert("ログインしてください");
+        location.href = "login.html";
+      }
+    }
+
+    function logout() {
+      auth.signOut();
+    }
 
     async function loadBook() {
       const doc = await db.collection("wordbooks").doc(bookId).get();

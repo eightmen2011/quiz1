@@ -70,6 +70,12 @@
 <body>
   <header>
     <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
+    <div id="status" style="display:none">ログイン確認中...</div>
+    <div>
+      <button id="mypageBtn" class="header-btn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
+      <button id="loginBtn" class="header-btn" onclick="location.href='login.html'">ログイン</button>
+      <button id="logoutBtn" class="header-btn" style="display:none" onclick="logout()">ログアウト</button>
+    </div>
   </header>
 
   <main>
@@ -130,6 +136,44 @@
     let mode = "book"; // book / user
     let books = [];
     let users = [];
+    let currentUser = null;
+
+    const statusDiv = document.getElementById("status");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const mypageBtn = document.getElementById("mypageBtn");
+
+    firebase.auth().onAuthStateChanged(user => {
+      currentUser = user;
+      if (user) {
+        statusDiv.textContent = "ログイン中: " + user.uid;
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        mypageBtn.style.display = "inline-block";
+      } else {
+        statusDiv.textContent = "ログアウト中";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        mypageBtn.style.display = "none";
+      }
+    });
+
+    function goPage(page) {
+      if (page === "index.html") {
+        location.href = "index.html";
+        return;
+      }
+      if (currentUser) {
+        location.href = page;
+      } else {
+        alert("ログインしてください");
+        location.href = "login.html";
+      }
+    }
+
+    function logout() {
+      firebase.auth().signOut();
+    }
 
     async function load() {
       // 公開単語帳

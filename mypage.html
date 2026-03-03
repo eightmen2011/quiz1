@@ -45,6 +45,12 @@
 
   <header>
     <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
+    <div id="status" style="display:none">ログイン確認中...</div>
+    <div>
+      <button id="mypageBtn" class="header-btn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
+      <button id="loginBtn" class="header-btn" onclick="location.href='login.html'">ログイン</button>
+      <button id="logoutBtn" class="header-btn" style="display:none" onclick="logout()">ログアウト</button>
+    </div>
   </header>
 
   <main>
@@ -68,6 +74,7 @@
       <h2>パスワード変更</h2>
       <input type="password" id="currentPass" placeholder="現在のパスワード">
       <input type="password" id="newPass" placeholder="新しいパスワード">
+      <input type="password" id="newPassConfirm" placeholder="新しいパスワード（確認）">
       <button onclick="changePassword()">変更する</button>
       <div id="passMsg" class="notice"></div>
     </div>
@@ -111,6 +118,11 @@
     const db = firebase.firestore();
     let currentUser = null;
 
+    const statusDiv = document.getElementById("status");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const mypageBtn = document.getElementById("mypageBtn");
+
     /* ===== ログインチェック ===== */
     auth.onAuthStateChanged(async user => {
       if (!user) {
@@ -120,12 +132,41 @@
 
       currentUser = user;
 
-      document.getElementById("uid").textContent = user.uid;
-      document.getElementById("email").textContent = user.email;
-      document.getElementById("usernameText").textContent = user.displayName || "未設定";
+      if (user) {
+        statusDiv.textContent = "ログイン中: " + user.uid;
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        mypageBtn.style.display = "inline-block";
 
-      loadBookCount();
+        document.getElementById("uid").textContent = user.uid;
+        document.getElementById("email").textContent = user.email;
+        document.getElementById("usernameText").textContent = user.displayName || "未設定";
+
+        loadBookCount();
+      } else {
+        statusDiv.textContent = "ログアウト中";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        mypageBtn.style.display = "none";
+      }
     });
+
+    function goPage(page) {
+      if (page === "index.html") {
+        location.href = "index.html";
+        return;
+      }
+      if (currentUser) {
+        location.href = page;
+      } else {
+        alert("ログインしてください");
+        location.href = "login.html";
+      }
+    }
+
+    function logout() {
+      auth.signOut();
+    }
 
     /* ===== 作成単語帳数 ===== */
     async function loadBookCount() {
@@ -174,10 +215,17 @@
     async function changePassword() {
       const current = document.getElementById("currentPass").value;
       const newPass = document.getElementById("newPass").value;
+      const newPassConfirm = document.getElementById("newPassConfirm").value;
       const msg = document.getElementById("passMsg");
 
-      if (!current || !newPass) {
+      if (!current || !newPass || !newPassConfirm) {
         msg.textContent = "すべて入力してください";
+        msg.className = "notice";
+        return;
+      }
+
+      if (newPass !== newPassConfirm) {
+        msg.textContent = "新しいパスワードが一致しません";
         msg.className = "notice";
         return;
       }
@@ -196,6 +244,7 @@
 
         document.getElementById("currentPass").value = "";
         document.getElementById("newPass").value = "";
+        document.getElementById("newPassConfirm").value = "";
       } catch (e) {
         msg.textContent = "エラー: " + e.message;
         msg.className = "notice";

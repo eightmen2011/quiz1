@@ -52,6 +52,12 @@
     <p class="headertitle">
       <a href="index.html">単語帳(名前募集中)</a>
     </p>
+    <div id="status" style="display:none">ログイン確認中...</div>
+    <div>
+      <button id="mypageBtn" class="header-btn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
+      <button id="loginBtn" class="header-btn" onclick="location.href='login.html'">ログイン</button>
+      <button id="logoutBtn" class="header-btn" style="display:none" onclick="logout()">ログアウト</button>
+    </div>
   </header>
 
   <main>
@@ -99,6 +105,45 @@
 
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
+      const auth = firebase.auth();
+      let currentUser = null;
+
+      const statusDiv = document.getElementById("status");
+      const loginBtn = document.getElementById("loginBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const mypageBtn = document.getElementById("mypageBtn");
+
+      auth.onAuthStateChanged(user => {
+        currentUser = user;
+        if (user) {
+          statusDiv.textContent = "ログイン中: " + user.uid;
+          loginBtn.style.display = "none";
+          logoutBtn.style.display = "inline-block";
+          mypageBtn.style.display = "inline-block";
+        } else {
+          statusDiv.textContent = "ログアウト中";
+          loginBtn.style.display = "inline-block";
+          logoutBtn.style.display = "none";
+          mypageBtn.style.display = "none";
+        }
+      });
+
+      window.goPage = function (page) {
+        if (page === "index.html") {
+          location.href = "index.html";
+          return;
+        }
+        if (currentUser) {
+          location.href = page;
+        } else {
+          alert("ログインしてください");
+          location.href = "login.html";
+        }
+      };
+
+      window.logout = function () {
+        auth.signOut();
+      };
 
       const params = new URLSearchParams(location.search);
       const uid = params.get("id");

@@ -49,6 +49,11 @@ button {
   font-family: inherit;
 }
 
+.header-btn {
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
+
 footer {
   background: #191970;
   color: white;
