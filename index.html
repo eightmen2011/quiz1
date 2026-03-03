@@ -65,6 +65,7 @@
       max-width: 1000px;
       margin: 30px auto;
       text-align: center;
+      padding: 0 15px;
     }
 
     #mypageBtn {
@@ -84,17 +85,16 @@
       gap: 20px;
       justify-content: center;
       flex-wrap: wrap;
-      width: 1000px;
+      width: 100%;
+      max-width: 1000px;
     }
 
-    #myBooks {
-      width: 450px;
-      min-height: 200px;
-    }
-
+    #myBooks,
     #noticeBox {
-      width: 450px;
+      width: 100%;
+      max-width: 480px;
       min-height: 200px;
+      box-sizing: border-box;
     }
 
     #noticeBox ul {
@@ -115,24 +115,45 @@
       height: 100px;
     }
 
-    .maincard1 {
-      font-size: 20px;
+    .maincard1,
+    .maincard2 {
+      font-size: 18px;
       border: solid 2px #191970;
       background-color: #FFFFFF;
       color: #191970;
-      width: 40%;
-      height: 100px;
-      margin-right: 20px;
+      width: 45%;
+      height: 110px;
+      border-radius: 15px;
+      transition: transform 0.2s;
     }
 
-    .maincard2 {
-      font-size: 20px;
-      border: solid 2px #191970;
-      background-color: #FFFFFF;
-      color: #191970;
-      width: 40%;
-      height: 100px;
-      margin-left: 20px;
+    .maincard1:active,
+    .maincard2:active {
+      transform: scale(0.95);
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        flex-direction: column;
+        gap: 15px;
+        background: transparent;
+      }
+
+      .maincard1,
+      .maincard2 {
+        width: 100%;
+        margin: 0;
+        height: 120px;
+      }
+
+      #dashboard {
+        gap: 15px;
+      }
+
+      #myBooks,
+      #noticeBox {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
