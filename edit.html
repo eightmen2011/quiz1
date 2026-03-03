@@ -256,6 +256,11 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
+      // ★ 単語数を+1
+      await db.collection("wordbooks").doc(bookId).update({
+        wordCount: firebase.firestore.FieldValue.increment(1)
+      });
+
       document.getElementById("front").value = "";
       document.getElementById("back").value = "";
 
@@ -265,6 +270,12 @@
     async function deleteWord(id) {
       if (!confirm("この単語を削除しますか？")) return;
       await db.collection("wordbooks").doc(bookId).collection("words").doc(id).delete();
+
+      // ★ 単語数を-1
+      await db.collection("wordbooks").doc(bookId).update({
+        wordCount: firebase.firestore.FieldValue.increment(-1)
+      });
+
       document.getElementById("word_" + id)?.remove();
     }
 
@@ -301,6 +312,7 @@
       const text = await file.text();
       const lines = text.trim().split("\n");
 
+      let addedCount = 0;
       for (const line of lines) {
         const [f, b] = line.split(",");
         if (f && b) {
@@ -309,7 +321,14 @@
             back: b.trim(),
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
+          addedCount++;
         }
+      }
+
+      if (addedCount > 0) {
+        await db.collection("wordbooks").doc(bookId).update({
+          wordCount: firebase.firestore.FieldValue.increment(addedCount)
+        });
       }
 
       alert("CSV読み込み完了");

@@ -223,7 +223,8 @@
         isPublic: isPublic,
         owner: currentUser.uid,
         ownerName: currentUser.displayName || "名無し",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp() // ★ 作成時間追加
+        wordCount: 0, // ★ 単語数を初期化
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       bookId = doc.id;
@@ -240,6 +241,11 @@
         front: f,
         back: b,
         createdAt: firebase.firestore.FieldValue.serverTimestamp() // 単語の追加時間も保存
+      });
+
+      // ★ 単語数を+1
+      await db.collection("wordbooks").doc(bookId).update({
+        wordCount: firebase.firestore.FieldValue.increment(1)
       });
 
       addWordToList(doc.id, f, b);
@@ -260,6 +266,12 @@
     async function deleteWord(id) {
       if (!confirm("削除しますか？")) return;
       await db.collection("wordbooks").doc(bookId).collection("words").doc(id).delete();
+
+      // ★ 単語数を-1
+      await db.collection("wordbooks").doc(bookId).update({
+        wordCount: firebase.firestore.FieldValue.increment(-1)
+      });
+
       document.getElementById("word_" + id).remove();
     }
 
@@ -275,6 +287,7 @@
       const text = await file.text();
       const lines = text.split("\n");
 
+      let addedCount = 0;
       for (const line of lines) {
         const [f, b] = line.split(",");
         if (f && b) {
@@ -284,7 +297,14 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
           addWordToList(doc.id, f.trim(), b.trim());
+          addedCount++;
         }
+      }
+
+      if (addedCount > 0) {
+        await db.collection("wordbooks").doc(bookId).update({
+          wordCount: firebase.firestore.FieldValue.increment(addedCount)
+        });
       }
 
       document.getElementById("csvFile").value = "";
