@@ -1,220 +1,235 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
-<title>Test</title>
-<link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
-<link rel="icon" type="image/x-icon" href="./favicon.ico">
-<link rel="stylesheet" type="text/css" href="style.css">
-<style>
-.main{
-  margin:0;
-  padding:0;
-  width:100%;
-  flex:1;
-}
-.card{
-  background:white;
-  max-width:600px;
-  margin:30px auto;
-  padding:30px;
-  border-radius:12px;
-  text-align:center;
-}
-input{
-  padding:10px;
-  font-size:16px;
-}
-#ans{
-  width:550px;
-}
-button{
-  background:#191970;
-  color:white;
-  border:none;
-  border-radius:8px;
-  padding:10px 16px;
-  margin:6px;
-  font-size:16px;
-}
-label{
-  font-size:14px;
-}
-#quiz{
-  min-height:280px; 
-}
-#end{
-  height:280px;
-}
-#score{
-  font-size:20px;
-}
-#resultfont{
-  font-size: 30px;
-  font-weight: bold;
-}
-#q{
-  font-size: 30px;
-}
-#result{
-  font-size: 20px;
-}
-#start{
-  width:50%;
-  height:280px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
+  <title>Test</title>
+  <link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <style>
+    .main {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      flex: 1;
+    }
+
+    .card {
+      background: white;
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    #ans {
+      width: 550px;
+    }
+
+    button {
+      background: #191970;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin: 6px;
+      font-size: 16px;
+    }
+
+    label {
+      font-size: 14px;
+    }
+
+    #quiz {
+      min-height: 280px;
+    }
+
+    #end {
+      height: 280px;
+    }
+
+    #score {
+      font-size: 20px;
+    }
+
+    #resultfont {
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    #q {
+      font-size: 30px;
+    }
+
+    #result {
+      font-size: 20px;
+    }
+
+    #start {
+      width: 50%;
+      height: 280px;
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
-</header>
+  <header>
+    <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
+  </header>
 
-<!-- 設定画面 -->
-<div class="main" class="start">
-<div class="card" id="start">
-  <h2>テスト設定</h2>
+  <!-- 設定画面 -->
+  <div class="main" class="start">
+    <div class="card" id="start">
+      <h2>テスト設定</h2>
 
-  <label>
-    <input type="checkbox" id="skipCheck" checked>
-    正解済みをスキップ
-  </label><br><br>
+      <label>
+        <input type="checkbox" id="skipCheck" checked>
+        正解済みをスキップ
+      </label><br><br>
 
-  <button onclick="resetLearned()">🔄 学習データをリセット</button><br><br>
+      <button onclick="resetLearned()">🔄 学習データをリセット</button><br><br>
 
-  <button onclick="startTest()">▶ スタート</button>
-  <p id="startMsg" style="color:red"></p>
-</div>
-</div>
-<!-- クイズ -->
-<div class="main">
-<div class="card" id="quiz" style="display:none">
-  <h2 id="q"></h2>
-  <input id="ans" placeholder="答えを入力" autocomplete="off"><br>
-  <p id="result"></p>
-  <button onclick="check()">回答 (Enter)</button>
-</div>
-</div>
-
-<!-- 結果 -->
-<div class="main">
-<div class="card" id="end" style="display:none">
-  <p id="resultfont">結果</p>
-  <p id="score"></p>
-  <button onclick="restart()">もう一回</button>
-  <button onclick="history.back(); return false;">戻る</button>
-</div>
-</div>
-
-<footer>
-  <div class="footer-inner">
-    <div>単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
-    <div class="footer-links">
-      <a href="index.html">ホーム</a>
-      <a href="list.html">公開単語帳</a>
-      <a href="create.html">作成</a>
-      <a href="mypage.html">マイページ</a>
-      <a href="update.html">更新履歴</a>
-      <a href="contact.html">お問い合わせ</a>
+      <button onclick="startTest()">▶ スタート</button>
+      <p id="startMsg" style="color:red"></p>
     </div>
-    <div class="copy">© 2026 TEAM-Minimal</div>
   </div>
-</footer>
+  <!-- クイズ -->
+  <div class="main">
+    <div class="card" id="quiz" style="display:none">
+      <h2 id="q"></h2>
+      <input id="ans" placeholder="答えを入力" autocomplete="off"><br>
+      <p id="result"></p>
+      <button onclick="check()">回答 (Enter)</button>
+    </div>
+  </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  <!-- 結果 -->
+  <div class="main">
+    <div class="card" id="end" style="display:none">
+      <p id="resultfont">結果</p>
+      <p id="score"></p>
+      <button onclick="restart()">もう一回</button>
+      <button onclick="history.back(); return false;">戻る</button>
+    </div>
+  </div>
 
-const firebaseConfig={apiKey:"AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",authDomain:"quiz1-4ffdc.firebaseapp.com",projectId:"quiz1-4ffdc",storageBucket:"quiz1-4ffdc.firebasestorage.app",messagingSenderId:"152062126332",appId:"1:152062126332:web:845af237a1a76207214f79"};
+  <footer>
+    <div class="footer-inner">
+      <div>単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
+      <div class="footer-links">
+        <a href="index.html">ホーム</a>
+        <a href="list.html">公開単語帳</a>
+        <a href="create.html">作成</a>
+        <a href="mypage.html">マイページ</a>
+        <a href="update.html">更新履歴</a>
+        <a href="contact.html">お問い合わせ</a>
+      </div>
+      <div class="copy">© 2026 TEAM-Minimal, Shiratae</div>
+    </div>
+  </footer>
 
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-const id=new URLSearchParams(location.search).get("id");
+    const firebaseConfig = { apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E", authDomain: "quiz1-4ffdc.firebaseapp.com", projectId: "quiz1-4ffdc", storageBucket: "quiz1-4ffdc.firebasestorage.app", messagingSenderId: "152062126332", appId: "1:152062126332:web:845af237a1a76207214f79" };
 
-let words=[], filteredWords=[], i=0, correct=0, phase=0;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-let learned = JSON.parse(localStorage.getItem("learnedWords")) || {};
-if(!learned[id]) learned[id]=[];
+    const id = new URLSearchParams(location.search).get("id");
 
-const snap=await getDocs(collection(db,"wordbooks",id,"words"));
-snap.forEach(d=>words.push(d.data()));
+    let words = [], filteredWords = [], i = 0, correct = 0, phase = 0;
 
-window.startTest=()=>{
-  makeList();
+    let learned = JSON.parse(localStorage.getItem("learnedWords")) || {};
+    if (!learned[id]) learned[id] = [];
 
-  if(filteredWords.length===0){
-    startMsg.textContent="すべて正解済みです。リセットしてください。";
-    return;
-  }
+    const snap = await getDocs(collection(db, "wordbooks", id, "words"));
+    snap.forEach(d => words.push(d.data()));
 
-  start.style.display="none";
-  quiz.style.display="block";
-  render();
-};
+    window.startTest = () => {
+      makeList();
 
-function makeList(){
-  const skip=document.getElementById("skipCheck").checked;
-  if(skip){
-    filteredWords = words.filter(w=>!learned[id].includes(w.front));
-  }else{
-    filteredWords = [...words];
-  }
-  filteredWords.sort(()=>Math.random()-0.5);
-}
-
-function render(){
-  if(i>=filteredWords.length){
-    quiz.style.display="none";
-    end.style.display="block";
-    score.textContent=`${correct}/${filteredWords.length} (${Math.round(correct/filteredWords.length*100)}%)`;
-    return;
-  }
-  q.textContent=filteredWords[i].front;
-  ans.value="";
-  result.textContent="";
-  phase=0;
-}
-
-window.check=()=>{
-  if(phase===0){
-    if(ans.value.trim()===filteredWords[i].back){
-      result.textContent="⭕ 正解";
-      correct++;
-      if(!learned[id].includes(filteredWords[i].front)){
-        learned[id].push(filteredWords[i].front);
-        localStorage.setItem("learnedWords",JSON.stringify(learned));
+      if (filteredWords.length === 0) {
+        startMsg.textContent = "すべて正解済みです。リセットしてください。";
+        return;
       }
-    }else{
-      result.textContent="❌ 不正解 正解: "+filteredWords[i].back;
+
+      start.style.display = "none";
+      quiz.style.display = "block";
+      render();
+    };
+
+    function makeList() {
+      const skip = document.getElementById("skipCheck").checked;
+      if (skip) {
+        filteredWords = words.filter(w => !learned[id].includes(w.front));
+      } else {
+        filteredWords = [...words];
+      }
+      filteredWords.sort(() => Math.random() - 0.5);
     }
-    phase=1;
-  }else{
-    i++;
-    render();
-  }
-};
 
-window.restart=()=>{
-  i=0;correct=0;
-  end.style.display="none";
-  quiz.style.display="block";
-  makeList();
-  render();
-};
+    function render() {
+      if (i >= filteredWords.length) {
+        quiz.style.display = "none";
+        end.style.display = "block";
+        score.textContent = `${correct}/${filteredWords.length} (${Math.round(correct / filteredWords.length * 100)}%)`;
+        return;
+      }
+      q.textContent = filteredWords[i].front;
+      ans.value = "";
+      result.textContent = "";
+      phase = 0;
+    }
 
-window.resetLearned=()=>{
-  if(!confirm("学習データを削除しますか？")) return;
-  learned[id]=[];
-  localStorage.setItem("learnedWords",JSON.stringify(learned));
-  startMsg.textContent="リセットしました。";
-};
+    window.check = () => {
+      if (phase === 0) {
+        if (ans.value.trim() === filteredWords[i].back) {
+          result.textContent = "⭕ 正解";
+          correct++;
+          if (!learned[id].includes(filteredWords[i].front)) {
+            learned[id].push(filteredWords[i].front);
+            localStorage.setItem("learnedWords", JSON.stringify(learned));
+          }
+        } else {
+          result.textContent = "❌ 不正解 正解: " + filteredWords[i].back;
+        }
+        phase = 1;
+      } else {
+        i++;
+        render();
+      }
+    };
 
-document.addEventListener("keydown",e=>{
-  if(e.key==="Enter" && quiz.style.display==="block") check();
-});
-</script>
+    window.restart = () => {
+      i = 0; correct = 0;
+      end.style.display = "none";
+      quiz.style.display = "block";
+      makeList();
+      render();
+    };
+
+    window.resetLearned = () => {
+      if (!confirm("学習データを削除しますか？")) return;
+      learned[id] = [];
+      localStorage.setItem("learnedWords", JSON.stringify(learned));
+      startMsg.textContent = "リセットしました。";
+    };
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Enter" && quiz.style.display === "block") check();
+    });
+  </script>
 </body>
+
 </html>

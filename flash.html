@@ -1,111 +1,115 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
-<title>Flash</title>
-<link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
-<link rel="icon" type="image/x-icon" href="./favicon.ico">
-<link rel="stylesheet" type="text/css" href="style.css">
-<style>
-.card{
-  background:white;
-  max-width:600px;
-  margin:40px auto;
-  padding:30px;
-  border-radius:12px;
-  text-align:center;
-  min-height: 200px;
-}
-#back{
-  font-size:25px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
+  <title>Flash</title>
+  <link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <style>
+    .card {
+      background: white;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      min-height: 200px;
+    }
+
+    #back {
+      font-size: 25px;
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
-</header>
-<main>
-<div class="card">
-  <h2 id="front"></h2>
-  <p id="back" style="display:none"></p>
-  <button onclick="showBack()">答えを見る (Enter)</button>
-</div>
-
-<div class="card" id="end" style="display:none">
-  <h2>終了！</h2>
-  <button onclick="restart()">もう一回</button>
-  <button onclick="history.back(); return false;">戻る</button>
-</div>
-</main>
-<footer>
-  <div class="footer-inner">
-    <div>単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
-    <div class="footer-links">
-      <a href="index.html">ホーム</a>
-      <a href="list.html">公開単語帳</a>
-      <a href="create.html">作成</a>
-      <a href="mypage.html">マイページ</a>
-      <a href="update.html">更新履歴</a>
-      <a href="contact.html">お問い合わせ</a>
+  <header>
+    <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
+  </header>
+  <main>
+    <div class="card">
+      <h2 id="front"></h2>
+      <p id="back" style="display:none"></p>
+      <button onclick="showBack()">答えを見る (Enter)</button>
     </div>
-    <div class="copy">© 2026 TEAM-Minimal</div>
-  </div>
-</footer>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+    <div class="card" id="end" style="display:none">
+      <h2>終了！</h2>
+      <button onclick="restart()">もう一回</button>
+      <button onclick="history.back(); return false;">戻る</button>
+    </div>
+  </main>
+  <footer>
+    <div class="footer-inner">
+      <div>単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
+      <div class="footer-links">
+        <a href="index.html">ホーム</a>
+        <a href="list.html">公開単語帳</a>
+        <a href="create.html">作成</a>
+        <a href="mypage.html">マイページ</a>
+        <a href="update.html">更新履歴</a>
+        <a href="contact.html">お問い合わせ</a>
+      </div>
+      <div class="copy">© 2026 TEAM-Minimal, Shiratae</div>
+    </div>
+  </footer>
 
-const firebaseConfig={apiKey:"AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",authDomain:"quiz1-4ffdc.firebaseapp.com",projectId:"quiz1-4ffdc",storageBucket:"quiz1-4ffdc.firebasestorage.app",messagingSenderId:"152062126332",appId:"1:152062126332:web:845af237a1a76207214f79"};
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
+    const firebaseConfig = { apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E", authDomain: "quiz1-4ffdc.firebaseapp.com", projectId: "quiz1-4ffdc", storageBucket: "quiz1-4ffdc.firebasestorage.app", messagingSenderId: "152062126332", appId: "1:152062126332:web:845af237a1a76207214f79" };
 
-const id=new URLSearchParams(location.search).get("id");
-let words=[],i=0,show=false;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-const snap=await getDocs(collection(db,"wordbooks",id,"words"));
-snap.forEach(d=>words.push(d.data()));
-words.sort(()=>Math.random()-0.5);
+    const id = new URLSearchParams(location.search).get("id");
+    let words = [], i = 0, show = false;
 
-function render(){
-  if(i>=words.length){
-    document.querySelector(".card").style.display="none";
-    end.style.display="block";
-    return;
-  }
-  front.textContent=words[i].front;
-  back.textContent=words[i].back;
-  back.style.display="none";
-  show=false;
-}
+    const snap = await getDocs(collection(db, "wordbooks", id, "words"));
+    snap.forEach(d => words.push(d.data()));
+    words.sort(() => Math.random() - 0.5);
 
-window.showBack=()=>{
-  if(!show){
-    back.style.display="block";
-    show=true;
-  }else{
-    i++;
+    function render() {
+      if (i >= words.length) {
+        document.querySelector(".card").style.display = "none";
+        end.style.display = "block";
+        return;
+      }
+      front.textContent = words[i].front;
+      back.textContent = words[i].back;
+      back.style.display = "none";
+      show = false;
+    }
+
+    window.showBack = () => {
+      if (!show) {
+        back.style.display = "block";
+        show = true;
+      } else {
+        i++;
+        render();
+      }
+    };
+
+    window.restart = () => {
+      i = 0;
+      words.sort(() => Math.random() - 0.5);
+      end.style.display = "none";
+      document.querySelector(".card").style.display = "block";
+      render();
+    };
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Enter") showBack();
+    });
+
     render();
-  }
-};
-
-window.restart=()=>{
-  i=0;
-  words.sort(()=>Math.random()-0.5);
-  end.style.display="none";
-  document.querySelector(".card").style.display="block";
-  render();
-};
-
-document.addEventListener("keydown",e=>{
-  if(e.key==="Enter") showBack();
-});
-
-render();
-</script>
+  </script>
 </body>
+
 </html>
