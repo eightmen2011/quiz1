@@ -266,6 +266,26 @@ async function exportCSV(){
 function goView(){
   location.href="view.html?id="+bookId;
 }
+const front = document.getElementById("front");
+const back = document.getElementById("back");
+
+front.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault(); // フォーム送信を防ぐ（必要に応じて）
+    back.focus();
+  }
+});
+back.addEventListener("keydown", async function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+
+    // 単語追加
+    await addWord();
+
+    // front に戻る
+    front.focus();
+  }
+});
 </script>
 
 </body>
