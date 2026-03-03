@@ -1,168 +1,204 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
-<title>検索</title>
-<link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
-<link rel="icon" type="image/x-icon" href="./favicon.ico">
-<link rel="stylesheet" type="text/css" href="style.css">
-<style>
-.tabArea{
-  margin-bottom:15px;
-}
-.tab{
-  padding:10px 20px;
-  border:none;
-  border-radius:10px;
-  margin:0 5px;
-  cursor:pointer;
-  font-size:15px;
-}
-.active{
-  background:#191970;
-  color:white;
-}
-.inactive{
-  background:#ddd;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
+  <title>検索</title>
+  <link rel="apple-touch-icon" sizes="1024x1024" href="./icon.png">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <style>
+    .tabArea {
+      margin-bottom: 15px;
+    }
 
-input{
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ccc;
-  font-size:14px;
-  width:60%;
-  max-width:300px;
-}
+    .tab {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      margin: 0 5px;
+      cursor: pointer;
+      font-size: 15px;
+    }
 
-.card{
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  margin-bottom:15px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.title{
-  font-size:18px;
-  font-weight:bold;
-}
-.owner{
-  color:#666;
-  font-size:13px;
-}
-.count{
-  font-size:13px;
-  color:#333;
-}
-</style>
+    .active {
+      background: #191970;
+      color: white;
+    }
+
+    .inactive {
+      background: #ddd;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      width: 60%;
+      max-width: 300px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .owner {
+      color: #666;
+      font-size: 13px;
+    }
+
+    .count {
+      font-size: 13px;
+      color: #333;
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
-</header>
+  <header>
+    <p class="headertitle"><a href="index.html">単語帳アプリ(名前募集中)</a></p>
+  </header>
 
-<main>
-  <div class="tabArea">
-    <button id="bookTab" class="tab active" onclick="showBooks()">単語帳</button>
-    <button id="userTab" class="tab inactive" onclick="showUsers()">ユーザー</button>
-  </div>
-
-  <input id="search" placeholder="検索" oninput="render()"><br><br>
-
-  <div id="list"></div>
-</main>
-
-<footer>
-  <div class="footer-inner">
-    <div>単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
-    <div class="footer-links">
-      <a href="index.html">ホーム</a>
-      <a href="list.html">検索</a>
-      <a href="create.html">作成</a>
-      <a href="mypage.html">マイページ</a>
-      <a href="update.html">更新履歴</a>
-      <a href="contact.html">お問い合わせ</a>
+  <main>
+    <div class="tabArea">
+      <button id="bookTab" class="tab active" onclick="showBooks()">単語帳</button>
+      <button id="userTab" class="tab inactive" onclick="showUsers()">ユーザー</button>
     </div>
-    <div class="copy">© 2026 TEAM-Minimal</div>
-  </div>
-</footer>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <div style="margin-bottom:15px;">
+      <input id="search" placeholder="検索" oninput="render()">
+      <select id="sort" onchange="render()"
+        style="padding:10px; border-radius:10px; border:1px solid #ccc; font-size:14px; margin-left:5px; cursor:pointer;">
+        <option value="name">名称順</option>
+        <option value="count">単語数/作成数順</option>
+      </select>
+    </div>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
-  authDomain: "quiz1-4ffdc.firebaseapp.com",
-  projectId: "quiz1-4ffdc",
-  storageBucket: "quiz1-4ffdc.firebasestorage.app",
-  messagingSenderId: "152062126332",
-  appId: "1:152062126332:web:845af237a1a76207214f79"
-};
+    <div id="list"></div>
+  </main>
 
-firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
+  <footer>
+    <div class="footer-inner">
+      <div>単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
+      <div class="footer-links">
+        <a href="index.html">ホーム</a>
+        <a href="list.html">検索</a>
+        <a href="create.html">作成</a>
+        <a href="mypage.html">マイページ</a>
+        <a href="update.html">更新履歴</a>
+        <a href="contact.html">お問い合わせ</a>
+      </div>
+      <div class="copy">© 2026 TEAM-Minimal</div>
+    </div>
+  </footer>
 
-let mode="book"; // book / user
-let books=[];
-let users=[];
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-async function load(){
-  // 公開単語帳
-  const snap = await db.collection("wordbooks")
-    .where("isPublic","==",true)
-    .get();
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
+      authDomain: "quiz1-4ffdc.firebaseapp.com",
+      projectId: "quiz1-4ffdc",
+      storageBucket: "quiz1-4ffdc.firebasestorage.app",
+      messagingSenderId: "152062126332",
+      appId: "1:152062126332:web:845af237a1a76207214f79"
+    };
 
-  books = [];
-  for(const d of snap.docs){
-    const wordSnap = await db.collection("wordbooks").doc(d.id).collection("words").get();
-    books.push({
-      id:d.id,
-      title:d.data().title,
-      ownerName:d.data().ownerName || "不明",
-      count: wordSnap.size
-    });
-  }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  // users
-  const snapUsers = await db.collection("users").get();
-  users = snapUsers.docs.map(d=>({
-    id:d.id,
-    username:d.data().username || ""
-  }));
+    let mode = "book"; // book / user
+    let books = [];
+    let users = [];
 
-  render();
-}
+    async function load() {
+      // 公開単語帳
+      const snap = await db.collection("wordbooks")
+        .where("isPublic", "==", true)
+        .get();
 
-function showBooks(){
-  mode="book";
-  document.getElementById("bookTab").className="tab active";
-  document.getElementById("userTab").className="tab inactive";
-  render();
-}
+      const userBookCounts = {};
+      books = [];
+      for (const d of snap.docs) {
+        const data = d.data();
+        const wordSnap = await db.collection("wordbooks").doc(d.id).collection("words").get();
 
-function showUsers(){
-  mode="user";
-  document.getElementById("bookTab").className="tab inactive";
-  document.getElementById("userTab").className="tab active";
-  render();
-}
+        // 単語帳リスト用データ
+        books.push({
+          id: d.id,
+          title: data.title,
+          ownerName: data.ownerName || "不明",
+          count: wordSnap.size
+        });
 
-function render(){
-  const q=document.getElementById("search").value.toLowerCase();
-  const area=document.getElementById("list");
-  area.innerHTML="";
+        // ユーザーごとの公開単語帳数をカウント
+        const ownerId = data.owner;
+        if (ownerId) {
+          userBookCounts[ownerId] = (userBookCounts[ownerId] || 0) + 1;
+        }
+      }
 
-  if(mode==="book"){
-    books.filter(b=>b.title.toLowerCase().includes(q)).forEach(b=>{
-      const div=document.createElement("div");
-      div.className="card";
-      div.innerHTML=`
+      // users
+      const snapUsers = await db.collection("users").get();
+      users = snapUsers.docs.map(d => ({
+        id: d.id,
+        username: d.data().username || "名無し",
+        bookCount: userBookCounts[d.id] || 0
+      }));
+
+      render();
+    }
+
+    function showBooks() {
+      mode = "book";
+      document.getElementById("bookTab").className = "tab active";
+      document.getElementById("userTab").className = "tab inactive";
+      render();
+    }
+
+    function showUsers() {
+      mode = "user";
+      document.getElementById("bookTab").className = "tab inactive";
+      document.getElementById("userTab").className = "tab active";
+      render();
+    }
+
+    function render() {
+      const q = document.getElementById("search").value.toLowerCase();
+      const sort = document.getElementById("sort").value;
+      const area = document.getElementById("list");
+      area.innerHTML = "";
+
+      if (mode === "book") {
+        let filtered = books.filter(b => b.title.toLowerCase().includes(q));
+
+        // ソート
+        if (sort === "name") {
+          filtered.sort((a, b) => a.title.localeCompare(b.title, 'ja'));
+        } else if (sort === "count") {
+          filtered.sort((a, b) => b.count - a.count);
+        }
+
+        filtered.forEach(b => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
         <div>
           <div class="title">${b.title}</div>
           <div class="owner">作成者：${b.ownerName}</div>
@@ -170,23 +206,36 @@ function render(){
         </div>
         <button onclick="location.href='view.html?id=${b.id}'">開く</button>
       `;
-      area.appendChild(div);
-    });
-  }else{
-    users.filter(u=>u.username.toLowerCase().includes(q)).forEach(u=>{
-      const div=document.createElement("div");
-      div.className="card";
-      div.innerHTML=`
-        <div class="title">${u.username}</div>
+          area.appendChild(div);
+        });
+      } else {
+        let filtered = users.filter(u => u.username.toLowerCase().includes(q));
+
+        // ソート
+        if (sort === "name") {
+          filtered.sort((a, b) => a.username.localeCompare(b.username, 'ja'));
+        } else if (sort === "count") {
+          filtered.sort((a, b) => b.bookCount - a.bookCount);
+        }
+
+        filtered.forEach(u => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+        <div>
+          <div class="title">${u.username}</div>
+          <div class="count">作成した単語帳数：${u.bookCount}</div>
+        </div>
         <button onclick="location.href='user.html?id=${u.id}'">見る</button>
       `;
-      area.appendChild(div);
-    });
-  }
-}
+          area.appendChild(div);
+        });
+      }
+    }
 
-load();
-</script>
+    load();
+  </script>
 
 </body>
+
 </html>
