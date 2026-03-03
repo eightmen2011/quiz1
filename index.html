@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
@@ -18,254 +19,272 @@
     }
   </script>
   <style>
-  .card{
-    background:#eef2ff;
-    border-radius:12px;
-    align-items: center;
-    display: flex;
-    text-align: center;
-    justify-content: center;
-  }
-  .list{
-    background:white;
-    margin-top:20px;
-    padding:20px;
-    border-radius:12px;
-  }
-  .wordbook{
-    padding:10px;
-    border-bottom:1px solid #ddd;
-    display:flex;
-    justify-content:space-between;
-  }
-  a{
-    text-decoration:none;
-    color:#191970;
-    font-weight:bold;
-  }
-  html, body{
-    height:100%;
-    margin:0;
-  }
-  body{
-    display:flex;
-    flex-direction:column;
-    background:#eef2ff;
-  }
-  main{
-    flex:1;
-    max-width:1000px;
-    margin:30px auto;
-    text-align:center;
-  }
-    
-  #mypageBtn{
-    font-size:20px;
-    font-family: "Noto Serif JP", serif;
-  }
-  #loginBtn{
-    font-size:20px;
-    font-family: "Noto Serif JP", serif;
-  }
-  #logoutBtn{
-    font-size:20px;
-    font-family: "Noto Serif JP", serif;
-  }
-  #dashboard{
-    display:flex;
-    gap:20px;
-    justify-content:center;
-    flex-wrap:wrap;
-    width:1000px;
-  }
-  #myBooks{
-    width:450px;
-    min-height:200px;
-  }
-  #noticeBox{
-    width:450px;
-    min-height:200px;
-  }
-  #noticeBox ul{
-    padding-left:20px;
-    text-align:left;
-  }
-  #noticeBox li{
-    margin-bottom:8px;
-  }
-  .maincard{
-    font-size:20px;
-    border: solid 2px #191970;
-    background-color: #FFFFFF;
-    color:#191970;
-    width:40%;
-    height:100px;
-  }
-  .maincard1{
-    font-size:20px;
-    border: solid 2px #191970;
-    background-color: #FFFFFF;
-    color:#191970;
-    width:40%;
-    height:100px;
-    margin-right:20px;
-  }
-  .maincard2{
-    font-size:20px;
-    border: solid 2px #191970;
-    background-color: #FFFFFF;
-    color:#191970;
-    width:40%;
-    height:100px;
-    margin-left:20px;
-  }
+    .card {
+      background: #eef2ff;
+      border-radius: 12px;
+      align-items: center;
+      display: flex;
+      text-align: center;
+      justify-content: center;
+    }
+
+    .list {
+      background: white;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .wordbook {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    a {
+      text-decoration: none;
+      color: #191970;
+      font-weight: bold;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background: #eef2ff;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1000px;
+      margin: 30px auto;
+      text-align: center;
+    }
+
+    #mypageBtn {
+      font-size: 20px;
+    }
+
+    #loginBtn {
+      font-size: 20px;
+    }
+
+    #logoutBtn {
+      font-size: 20px;
+    }
+
+    #dashboard {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      width: 1000px;
+    }
+
+    #myBooks {
+      width: 450px;
+      min-height: 200px;
+    }
+
+    #noticeBox {
+      width: 450px;
+      min-height: 200px;
+    }
+
+    #noticeBox ul {
+      padding-left: 20px;
+      text-align: left;
+    }
+
+    #noticeBox li {
+      margin-bottom: 8px;
+    }
+
+    .maincard {
+      font-size: 20px;
+      border: solid 2px #191970;
+      background-color: #FFFFFF;
+      color: #191970;
+      width: 40%;
+      height: 100px;
+    }
+
+    .maincard1 {
+      font-size: 20px;
+      border: solid 2px #191970;
+      background-color: #FFFFFF;
+      color: #191970;
+      width: 40%;
+      height: 100px;
+      margin-right: 20px;
+    }
+
+    .maincard2 {
+      font-size: 20px;
+      border: solid 2px #191970;
+      background-color: #FFFFFF;
+      color: #191970;
+      width: 40%;
+      height: 100px;
+      margin-left: 20px;
+    }
   </style>
 </head>
+
 <body>
 
-<script src="//accaii.com/quiz1/script.js" async></script><noscript><img src="//accaii.com/quiz1/script?guid=on"></noscript>
+  <script src="//accaii.com/quiz1/script.js" async></script><noscript><img
+      src="//accaii.com/quiz1/script?guid=on"></noscript>
 
 
-<header>
-  <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
-  <div id="status" style="display:none">ログイン確認中...</div>
-  <div>
-    <button id="mypageBtn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
-    <button id="loginBtn" onclick="location.href='login.html'">ログイン</button>
-    <button id="logoutBtn" style="display:none" onclick="logout()">ログアウト</button>
-  </div>
-</header>
-
-<main>
-  <div class="card">
-    <button onclick="goPage('create.html')" class="maincard1"><img src="./to-create.jpeg" width="60px"><br>作成</button>
-    <button onclick="goPage('list.html')" class="maincard2"><img src="./to-list.jpeg" width="90px"><br>検索</button>
-  </div>
-  <div id="dashboard" style="display:none">
-    <div id="myBooks" class="list">
-      <h2>自分の単語帳</h2>
-      <div id="bookList"></div>
+  <header>
+    <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
+    <div id="status" style="display:none">ログイン確認中...</div>
+    <div>
+      <button id="mypageBtn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
+      <button id="loginBtn" onclick="location.href='login.html'">ログイン</button>
+      <button id="logoutBtn" style="display:none" onclick="logout()">ログアウト</button>
     </div>
-    <div id="noticeBox" class="list">
-      <h2>🔔 お知らせ</h2>
-      <ul id="noticeList">
-	      <li>このサイトの名前を募集します！<a href="./newname.html">こちら</a>から</li>
-      	<li>お問い合わせ（パスワードを忘れたなども）、追加してほしい機能があれば<a href="./contact.html">こちら</a>からお願いします。</li>
-		<li>頂いた意見は考査後順次実装していく予定です。</li>
-      	<li>考査後、違うリンクで公開する予定です。メールアドレス、パスワードを新たに設定する必要はありません。</li>
-        <li>パソコンでの利用を推奨します。</li>
-      </ul>
+  </header>
+
+  <main>
+    <div class="card">
+      <button onclick="goPage('create.html')" class="maincard1"><img src="./to-create.jpeg" width="60px"><br>作成</button>
+      <button onclick="goPage('list.html')" class="maincard2"><img src="./to-list.jpeg" width="90px"><br>検索</button>
     </div>
+    <div id="dashboard" style="display:none">
+      <div id="myBooks" class="list">
+        <h2>自分の単語帳</h2>
+        <div id="bookList"></div>
+      </div>
+      <div id="noticeBox" class="list">
+        <h2>🔔 お知らせ</h2>
+        <ul id="noticeList">
+          <li>このサイトの名前を募集します！<a href="./newname.html">こちら</a>から</li>
+          <li>お問い合わせ（パスワードを忘れたなども）、追加してほしい機能があれば<a href="./contact.html">こちら</a>からお願いします。</li>
+          <li>頂いた意見は考査後順次実装していく予定です。</li>
+          <li>考査後、違うリンクで公開する予定です。メールアドレス、パスワードを新たに設定する必要はありません。</li>
+          <li>パソコンでの利用を推奨します。</li>
+        </ul>
+      </div>
 
-  </div>
-</main>
-
-<footer>
-  <div class="footer-inner">
-    <div class="footertitle">単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
-    <div class="footer-links">
-      <a href="#" onclick="goPage('index.html')">ホーム</a>
-      <a href="#" onclick="goPage('list.html')">検索</a>
-      <a href="#" onclick="goPage('create.html')">作成</a>
-      <a href="#" onclick="goPage('mypage.html')">マイページ</a>
-      <a href="#" onclick="goPage('update.html')">更新履歴</a>
-	  <a href="https://docs.google.com/forms/d/e/1FAIpQLSckfc0WFGQJx6woNFUHYZ9d2QV6k0xd29pZfV1SoTi7IpBYRQ/viewform?usp=header" target="_blank" rel="noopener noreferrer">お問い合わせ</a>
     </div>
-    <div class="copy">© 2026 TEAM-Minimal</div>
-  </div>
-</footer>
+  </main>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <footer>
+    <div class="footer-inner">
+      <div class="footertitle">単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
+      <div class="footer-links">
+        <a href="#" onclick="goPage('index.html')">ホーム</a>
+        <a href="#" onclick="goPage('list.html')">検索</a>
+        <a href="#" onclick="goPage('create.html')">作成</a>
+        <a href="#" onclick="goPage('mypage.html')">マイページ</a>
+        <a href="#" onclick="goPage('update.html')">更新履歴</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSckfc0WFGQJx6woNFUHYZ9d2QV6k0xd29pZfV1SoTi7IpBYRQ/viewform?usp=header"
+          target="_blank" rel="noopener noreferrer">お問い合わせ</a>
+      </div>
+      <div class="copy">© 2026 TEAM-Minimal</div>
+    </div>
+  </footer>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
-  authDomain: "quiz1-4ffdc.firebaseapp.com",
-  projectId: "quiz1-4ffdc",
-  storageBucket: "quiz1-4ffdc.firebasestorage.app",
-  messagingSenderId: "152062126332",
-  appId: "1:152062126332:web:845af237a1a76207214f79"
-};
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-firebase.initializeApp(firebaseConfig);
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E",
+      authDomain: "quiz1-4ffdc.firebaseapp.com",
+      projectId: "quiz1-4ffdc",
+      storageBucket: "quiz1-4ffdc.firebasestorage.app",
+      messagingSenderId: "152062126332",
+      appId: "1:152062126332:web:845af237a1a76207214f79"
+    };
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+    firebase.initializeApp(firebaseConfig);
 
-const statusDiv = document.getElementById("status");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const mypageBtn = document.getElementById("mypageBtn");
-const dashboardDiv = document.getElementById("dashboard");
-const bookListDiv = document.getElementById("bookList");
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-let currentUser = null;
+    const statusDiv = document.getElementById("status");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const mypageBtn = document.getElementById("mypageBtn");
+    const dashboardDiv = document.getElementById("dashboard");
+    const bookListDiv = document.getElementById("bookList");
 
-auth.onAuthStateChanged(user=>{
-  currentUser = user;
-  if(user){
-    statusDiv.textContent = "ログイン中: " + user.uid;
-    loginBtn.style.display="none";
-    logoutBtn.style.display="inline-block";
-    mypageBtn.style.display="inline-block";
-    dashboardDiv.style.display="flex";
-    loadMyBooks(user.uid);
-  }else{
-    statusDiv.textContent = "ログアウト中";
-    loginBtn.style.display="inline-block";
-    logoutBtn.style.display="none";
-    mypageBtn.style.display="none";
-    dashboardDiv.style.display="none";
-  }
-});
+    let currentUser = null;
 
-function goPage(page){
-  if(page === "index.html"){
-    location.href = "index.html";
-    return;
-  }
-  if(currentUser){
-    location.href = page;
-  }else{
-    alert("ログインしてください");
-    location.href = "login.html";
-  }
-}
+    auth.onAuthStateChanged(user => {
+      currentUser = user;
+      if (user) {
+        statusDiv.textContent = "ログイン中: " + user.uid;
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        mypageBtn.style.display = "inline-block";
+        dashboardDiv.style.display = "flex";
+        loadMyBooks(user.uid);
+      } else {
+        statusDiv.textContent = "ログアウト中";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        mypageBtn.style.display = "none";
+        dashboardDiv.style.display = "none";
+      }
+    });
 
-function logout(){
-  auth.signOut();
-}
-
-function loadMyBooks(uid){
-  db.collection("wordbooks")
-    .where("owner","==",uid)
-    .get()
-    .then(snapshot=>{
-      bookListDiv.innerHTML="";
-
-      if(snapshot.empty){
-        bookListDiv.innerHTML="<p>まだ単語帳がありません</p>";
+    function goPage(page) {
+      if (page === "index.html") {
+        location.href = "index.html";
         return;
       }
+      if (currentUser) {
+        location.href = page;
+      } else {
+        alert("ログインしてください");
+        location.href = "login.html";
+      }
+    }
 
-      snapshot.forEach(doc=>{
-        const data = doc.data();
-        const div = document.createElement("div");
-        div.className="wordbook";
-        div.innerHTML = `
+    function logout() {
+      auth.signOut();
+    }
+
+    function loadMyBooks(uid) {
+      db.collection("wordbooks")
+        .where("owner", "==", uid)
+        .get()
+        .then(snapshot => {
+          bookListDiv.innerHTML = "";
+
+          if (snapshot.empty) {
+            bookListDiv.innerHTML = "<p>まだ単語帳がありません</p>";
+            return;
+          }
+
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            const div = document.createElement("div");
+            div.className = "wordbook";
+            div.innerHTML = `
           <span>${data.title}</span>
           <a href="view.html?id=${doc.id}">開く</a>
         `;
-        bookListDiv.appendChild(div);
-      });
-    })
-    .catch(err=>{
-      alert("読み込みエラー: "+err.message);
-    });
-}
-</script>
+            bookListDiv.appendChild(div);
+          });
+        })
+        .catch(err => {
+          alert("読み込みエラー: " + err.message);
+        });
+    }
+  </script>
 
 </body>
+
 </html>
