@@ -22,12 +22,19 @@
   justify-content:space-between;
   align-items:center;
 }
+button{
+  padding:8px 16px;
+  border-radius:8px;
+  border:none;
+  background:#4f7cff;
+  color:white;
+  cursor:pointer;
+}
+button:hover{
+  opacity:0.85;
+}
 .danger{
   background:#b60033;
-  color:white;
-  border:none;
-  padding:8px 12px;
-  border-radius:8px;
 }
 a{
   color:#191970;
@@ -51,14 +58,6 @@ a{
   font-size:14px;
   width:200px
 }
-.saveBtn{
-  padding:12px 30px;
-  font-size:16px;
-  border:none;
-  border-radius:10px;
-  background:#4f7cff;
-  color:white;
-}
 </style>
 </head>
 <body>
@@ -71,7 +70,8 @@ a{
 
   <!-- タイトル編集 -->
   <div class="card">
-    <input id="titleInput" placeholder="タイトル" style="font-size:22px;width:100%;padding:10px;border-radius:10px;border:1px solid #ccc;">
+    <input id="titleInput" placeholder="タイトル"
+      style="font-size:22px;width:100%;padding:10px;border-radius:10px;border:1px solid #ccc;">
     <button class="danger" style="margin-top:15px;" onclick="deleteBook()">この単語帳を削除</button>
     <div id="msg" class="notice"></div>
   </div>
@@ -104,7 +104,7 @@ a{
 
   <!-- 保存ボタン -->
   <div class="card" style="text-align:center;">
-    <button class="saveBtn" onclick="saveBook()">保存</button>
+    <button onclick="saveBook()">保存</button>
   </div>
 
 </main>
@@ -221,7 +221,6 @@ async function addWord(){
 
   document.getElementById("front").value="";
   document.getElementById("back").value="";
-
   loadWords();
 }
 
@@ -260,7 +259,6 @@ async function saveBook(){
   alert("保存しました");
 }
 
-/* CSV読み込み */
 async function importCSV(){
   const file = document.getElementById("csvFile").files[0];
   if(!file) return alert("CSVファイルを選択してください");
@@ -283,7 +281,6 @@ async function importCSV(){
   loadWords();
 }
 
-/* CSV書き出し */
 async function exportCSV(){
   const snap = await db.collection("wordbooks").doc(bookId).collection("words").get();
   let csv="";
