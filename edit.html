@@ -24,6 +24,10 @@
 }
 .danger{
   background:#b60033;
+  color:white;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
 }
 a{
   color:#191970;
@@ -47,6 +51,14 @@ a{
   font-size:14px;
   width:200px
 }
+.saveBtn{
+  padding:12px 30px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+  background:#4f7cff;
+  color:white;
+}
 </style>
 </head>
 <body>
@@ -56,13 +68,15 @@ a{
 </header>
 
 <main>
+
+  <!-- タイトル編集 -->
   <div class="card">
-    <h2 id="title">読み込み中...</h2>
-    <div id="owner"></div>
-    <button class="danger" onclick="deleteBook()">この単語帳を削除</button>
+    <input id="titleInput" placeholder="タイトル" style="font-size:22px;width:100%;padding:10px;border-radius:10px;border:1px solid #ccc;">
+    <button class="danger" style="margin-top:15px;" onclick="deleteBook()">この単語帳を削除</button>
     <div id="msg" class="notice"></div>
   </div>
 
+  <!-- 単語追加 -->
   <div class="card">
     <h3>単語を追加</h3>
     <div class="wordRow">
@@ -74,11 +88,13 @@ a{
     </div>
   </div>
 
+  <!-- 単語一覧 -->
   <div class="card">
     <h3>単語一覧</h3>
     <div id="wordList"></div>
   </div>
 
+  <!-- CSV -->
   <div class="card">
     <h3>CSV操作</h3>
     <input type="file" id="csvFile" accept=".csv,.txt"><br><br>
@@ -86,7 +102,13 @@ a{
     <button onclick="exportCSV()">CSV書き出し</button>
   </div>
 
+  <!-- 保存ボタン -->
+  <div class="card" style="text-align:center;">
+    <button class="saveBtn" onclick="saveBook()">保存</button>
+  </div>
+
 </main>
+
 <footer>
   <div class="footer-inner">
     <div>単語帳<a href="./newname.html" class="footernewname">(名前募集中)</a></div>
@@ -101,6 +123,7 @@ a{
     <div class="copy">© 2026 TEAM-Minimal</div>
   </div>
 </footer>
+
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -154,7 +177,7 @@ async function loadBook(){
     return;
   }
 
-  document.getElementById("title").textContent = data.title;
+  document.getElementById("titleInput").value = data.title;
   loadWords();
 }
 
@@ -204,7 +227,6 @@ async function addWord(){
 
 async function deleteWord(id){
   if(!confirm("この単語を削除しますか？")) return;
-
   await db.collection("wordbooks").doc(bookId).collection("words").doc(id).delete();
   document.getElementById("word_"+id)?.remove();
 }
@@ -224,6 +246,18 @@ async function deleteBook(){
 
   alert("削除しました");
   location.href="index.html";
+}
+
+async function saveBook(){
+  const newTitle = document.getElementById("titleInput").value.trim();
+  if(!newTitle) return alert("タイトルを入力してください");
+
+  await db.collection("wordbooks").doc(bookId).update({
+    title: newTitle,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  alert("保存しました");
 }
 
 /* CSV読み込み */
