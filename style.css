@@ -94,9 +94,6 @@ footer {
 
 /* レスポンシブ対応 (Mobile First) */
 @media (max-width: 768px) {
-  html,body {
-    width: 100%;
-  }
   header {
     flex-direction: column;
     height: auto !important;
