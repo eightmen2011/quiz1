@@ -97,6 +97,8 @@
     <div class="card">
       <h2>単語帳情報</h2>
       <input id="title" placeholder="単語帳タイトル"><br>
+      <textarea id="description" placeholder="説明文（例：考査範囲、授業のメモなど）"
+        style="width: 80%; max-width: 400px; height: 80px; margin-top: 10px; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 14px; font-family: inherit; box-sizing: border-box;"></textarea>
 
       <div class="row">
         <label for="isPublic">公開する</label>
@@ -210,6 +212,7 @@
 
     async function createBook() {
       const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("description").value.trim();
       const isPublic = document.getElementById("isPublic").checked;
       const msg = document.getElementById("msg");
 
@@ -220,11 +223,13 @@
 
       const doc = await db.collection("wordbooks").add({
         title: title,
+        description: description,
         isPublic: isPublic,
         owner: currentUser.uid,
         ownerName: currentUser.displayName || "名無し",
-        wordCount: 0, // ★ 単語数を初期化
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        wordCount: 0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       bookId = doc.id;

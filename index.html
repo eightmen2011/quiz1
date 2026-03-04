@@ -65,7 +65,6 @@
       max-width: 1000px;
       margin: 30px auto;
       text-align: center;
-      padding: 0 15px;
     }
 
     #mypageBtn {
@@ -85,16 +84,18 @@
       gap: 20px;
       justify-content: center;
       flex-wrap: wrap;
-      width: 100%;
-      max-width: 1000px;
+      width: 1000px;
     }
 
-    #myBooks,
-    #noticeBox {
-      width: 100%;
-      max-width: 480px;
+    #myBooks {
+      width: 450px;
       min-height: 200px;
-      box-sizing: border-box;
+      position: relative;
+    }
+
+    #noticeBox {
+      width: 450px;
+      min-height: 200px;
     }
 
     #noticeBox ul {
@@ -115,59 +116,41 @@
       height: 100px;
     }
 
-    .maincard1,
-    .maincard2 {
-      font-size: 18px;
+    .maincard1 {
+      font-size: 20px;
       border: solid 2px #191970;
       background-color: #FFFFFF;
       color: #191970;
-      width: 45%;
-      height: 110px;
-      border-radius: 15px;
-      transition: transform 0.2s;
+      width: 40%;
+      height: 100px;
+      margin-right: 20px;
     }
 
-    .maincard1:active,
-    .maincard2:active {
-      transform: scale(0.95);
-    }
-
-    @media (max-width: 768px) {
-      .card {
-        flex-direction: column;
-        gap: 15px;
-        background: transparent;
-      }
-
-      .maincard1,
-      .maincard2 {
-        width: 100%;
-        margin: 0;
-        height: 120px;
-      }
-
-      #dashboard {
-        gap: 15px;
-      }
-
-      #myBooks,
-      #noticeBox {
-        max-width: 100%;
-      }
+    .maincard2 {
+      font-size: 20px;
+      border: solid 2px #191970;
+      background-color: #FFFFFF;
+      color: #191970;
+      width: 40%;
+      height: 100px;
+      margin-left: 20px;
     }
   </style>
 </head>
 
 <body>
+
   <script src="//accaii.com/quiz1/script.js" async></script><noscript><img
       src="//accaii.com/quiz1/script?guid=on"></noscript>
+
+
   <header>
     <p class="headertitle"><a href="index.html">単語帳(名前募集中)</a></p>
     <div id="status" style="display:none">ログイン確認中...</div>
     <div>
-      <button id="mypageBtn" class="header-btn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
-      <button id="loginBtn" class="header-btn" onclick="location.href='login.html'">ログイン</button>
-      <button id="logoutBtn" class="header-btn" style="display:none" onclick="logout()">ログアウト</button>
+      <button id="mypageBtn" style="display:none" onclick="goPage('mypage.html')">マイページ</button>
+      <button id="loginBtn" onclick="location.href='login.html'">ログイン</button>
+      <button id="logoutBtn" style="display:none" onclick="logout()">ログアウト</button>
     </div>
   </header>
 
@@ -177,7 +160,7 @@
       <button onclick="goPage('list.html')" class="maincard2"><img src="./to-list.jpeg" width="90px"><br>検索</button>
     </div>
     <div id="dashboard" style="display:none">
-      <div id="myBooks" class="list" style="position: relative;">
+      <div id="myBooks" class="list">
         <div id="loading-overlay">
           <div class="spinner"></div>
           <div class="loading-text">読み込み中...</div>
@@ -192,7 +175,7 @@
           <li>お問い合わせ（パスワードを忘れたなども）、追加してほしい機能があれば<a href="./contact.html">こちら</a>からお願いします。</li>
           <li>頂いた意見は考査後順次実装していく予定です。</li>
           <li>考査後、違うリンクで公開する予定です。メールアドレス、パスワードを新たに設定する必要はありません。</li>
-          <li>パソコンでの利用を推奨します。</li>
+          <li>パソコンでの利用を推奨します。→(26/3/3 スマホからの閲覧に対応しました！(暫定対応))</li>
         </ul>
       </div>
 
@@ -258,9 +241,16 @@
         logoutBtn.style.display = "none";
         mypageBtn.style.display = "none";
         dashboardDiv.style.display = "none";
+        hideLoading();
       }
-      hideLoading();
     });
+
+    function showLoading() {
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+      }
+    }
 
     function hideLoading() {
       const overlay = document.getElementById('loading-overlay');
@@ -287,6 +277,7 @@
     }
 
     function loadMyBooks(uid) {
+      showLoading();
       db.collection("wordbooks")
         .where("owner", "==", uid)
         .get()
@@ -295,6 +286,7 @@
 
           if (snapshot.empty) {
             bookListDiv.innerHTML = "<p>まだ単語帳がありません</p>";
+            hideLoading();
             return;
           }
 
@@ -308,8 +300,10 @@
         `;
             bookListDiv.appendChild(div);
           });
+          hideLoading();
         })
         .catch(err => {
+          hideLoading();
           alert("読み込みエラー: " + err.message);
         });
     }

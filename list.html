@@ -91,6 +91,11 @@
       font-size: 13px;
     }
 
+    .owner a {
+      color: #191970;
+      text-decoration: underline;
+    }
+
     .count {
       font-size: 13px;
       color: #333;
@@ -318,7 +323,7 @@
           div.innerHTML = `
         <div>
           <div class="title">${b.title}</div>
-          <div class="owner">作成者：${b.ownerName}</div>
+          <div class="owner">作成者：<a href="user.html?id=${b.ownerId}">${b.ownerName}</a></div>
           <div class="count">単語数：${b.count}</div>
         </div>
         <button onclick="location.href='view.html?id=${b.id}'">開く</button>
