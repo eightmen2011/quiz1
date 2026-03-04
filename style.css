@@ -56,7 +56,7 @@ button:active {
 
 .header-btn {
   font-size: 18px !important;
-  padding: 9px 12px !important;
+  margin: 9px 12px !important;
   white-space: nowrap;
 }
 
@@ -80,7 +80,6 @@ footer {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 15px;
 }
 
 .footer-links a {
