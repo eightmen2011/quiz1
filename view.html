@@ -159,9 +159,13 @@
     };
 
     const bookSnap = await getDoc(doc(db, "wordbooks", id));
+    if (!bookSnap.exists()) {
+      alert("単語帳が見つかりません");
+      location.href = "index.html";
+    }
     const book = bookSnap.data();
     owner = book.owner;
-    title.textContent = book.title;
+    document.getElementById("title").textContent = book.title;
 
     // 詳細情報の表示
     const details = [];
@@ -190,13 +194,14 @@
       descDiv.style.display = "block";
     }
 
+    const wordsDiv = document.getElementById("words");
     const wSnap = await getDocs(collection(db, "wordbooks", id, "words"));
     wSnap.forEach(d => {
-      words.innerHTML += `<div class="word">${d.data().front} - ${d.data().back}</div>`;
+      wordsDiv.innerHTML += `<div class="word">${d.data().front} - ${d.data().back}</div>`;
     });
 
-    flashBtn.href = `flash.html?id=${id}`;
-    testBtn.href = `test.html?id=${id}`;
+    document.getElementById("flashBtn").href = `flash.html?id=${id}`;
+    document.getElementById("testBtn").href = `test.html?id=${id}`;
 
     onAuthStateChanged(auth, user => {
       currentUser = user;
@@ -207,6 +212,7 @@
         mypageBtn.style.display = "inline-block";
 
         if (user.uid === owner) {
+          const editBtn = document.getElementById("editBtn");
           editBtn.style.display = "inline";
           editBtn.href = `edit.html?id=${id}`;
         }
