@@ -124,6 +124,12 @@
       height: 100px;
       margin-left: 20px;
     }
+    .cardpicture1 {
+      width: 60px;
+    }
+    .cardpicture2 {
+      width: 90px;
+    }
     @media (max-width: 768px) {
       html,body {
         width: 100vw;
@@ -177,8 +183,8 @@
 
   <main>
     <div class="card">
-      <button onclick="goPage('create.html')" class="maincard1"><img src="./to-create.jpeg" class="cardpicture" width="60px"><br>作成</button>
-      <button onclick="goPage('list.html')" class="maincard2"><img src="./to-list.jpeg" class="cardpicture" width="90px"><br>検索</button>
+      <button onclick="goPage('create.html')" class="maincard1"><img src="./to-create.jpeg" class="cardpicture1" width="60px"><br>作成</button>
+      <button onclick="goPage('list.html')" class="maincard2"><img src="./to-list.jpeg" class="cardpicture2" width="90px"><br>検索</button>
     </div>
     <div id="dashboard" style="display:none">
       <div id="myBooks" class="list">
