@@ -130,6 +130,10 @@
     .cardpicture2 {
       height: 55%;
     }
+    .openword {
+      color: #000000;
+      font-weight: normal;
+    }
     @media (max-width: 768px) {
       html,body {
         width: 100vw;
@@ -322,7 +326,7 @@
             const div = document.createElement("div");
             div.className = "wordbook";
             div.innerHTML = `
-          <a href="view.html?id=${doc.id}"><span>${data.title}</span></a>
+          <a href="view.html?id=${doc.id}" class="openword"><span>${data.title}</span></a>
         `;
             bookListDiv.appendChild(div);
           });
