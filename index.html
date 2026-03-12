@@ -322,8 +322,7 @@
             const div = document.createElement("div");
             div.className = "wordbook";
             div.innerHTML = `
-          <span>${data.title}</span>
-          <a href="view.html?id=${doc.id}">開く</a>
+          <a href="view.html?id=${doc.id}"><span>${data.title}</span></a>
         `;
             bookListDiv.appendChild(div);
           });
