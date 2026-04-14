@@ -304,13 +304,15 @@
       const lines = text.split("\n");
 
       let addedCount = 0;
-      for (const line of lines) {
+      const baseTime = Date.now();
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
         const [f, b] = line.split(",");
         if (f && b) {
           const doc = await db.collection("wordbooks").doc(bookId).collection("words").add({
             front: f.trim(),
             back: b.trim(),
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: new Date(baseTime + i)
           });
           addWordToList(doc.id, f.trim(), b.trim());
           addedCount++;

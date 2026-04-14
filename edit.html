@@ -235,7 +235,7 @@
     }
 
     async function loadWords() {
-      const snap = await db.collection("wordbooks").doc(bookId).collection("words").get();
+      const snap = await db.collection("wordbooks").doc(bookId).collection("words").orderBy("createdAt").get();
       const area = document.getElementById("wordList");
       area.innerHTML = "";
 
@@ -331,13 +331,15 @@
       const lines = text.trim().split("\n");
 
       let addedCount = 0;
-      for (const line of lines) {
+      const baseTime = Date.now();
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
         const [f, b] = line.split(",");
         if (f && b) {
           await db.collection("wordbooks").doc(bookId).collection("words").add({
             front: f.trim(),
             back: b.trim(),
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: new Date(baseTime + i)
           });
           addedCount++;
         }

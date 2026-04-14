@@ -147,7 +147,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyD7CJmO3eAO0o2EPRDsVqTtZ_whRd_3-3E", authDomain: "quiz1-4ffdc.firebaseapp.com", projectId: "quiz1-4ffdc", storageBucket: "quiz1-4ffdc.firebasestorage.app", messagingSenderId: "152062126332", appId: "1:152062126332:web:845af237a1a76207214f79" };
 
@@ -200,7 +200,8 @@
     let learned = JSON.parse(localStorage.getItem("learnedWords")) || {};
     if (!learned[id]) learned[id] = [];
 
-    const snap = await getDocs(collection(db, "wordbooks", id, "words"));
+    const qWords = query(collection(db, "wordbooks", id, "words"), orderBy("createdAt"));
+    const snap = await getDocs(qWords);
     snap.forEach(d => words.push(d.data()));
 
     window.startTest = () => {
