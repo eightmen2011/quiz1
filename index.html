@@ -413,11 +413,33 @@
 var modal = document.getElementById("myModal");
 var closeButton = document.querySelector(".close-button");
 
-window.onload = function() {
-  setTimeout(function() {
-    modal.style.display = "block";
-  }, 800);
-}
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  if (user) {
+    statusDiv.textContent = "ログイン中: " + user.uid;
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "inline-block";
+    mypageBtn.style.display = "inline-block";
+    dashboardDiv.style.display = "flex";
+    loadMyBooks(user.uid);
+
+    // 👇 ここでモーダル表示
+    setTimeout(function() {
+      modal.style.display = "block";
+    }, 800);
+
+  } else {
+    statusDiv.textContent = "ログアウト中";
+    loginBtn.style.display = "inline-block";
+    logoutBtn.style.display = "none";
+    mypageBtn.style.display = "none";
+    dashboardDiv.style.display = "none";
+    hideLoading();
+
+    // 念のため閉じる
+    modal.style.display = "none";
+  }
+});
 
 closeButton.onclick = function() {
   modal.style.display = "none";
