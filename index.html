@@ -423,7 +423,7 @@ auth.onAuthStateChanged(user => {
     dashboardDiv.style.display = "flex";
     loadMyBooks(user.uid);
 
-    // 👇 ここでモーダル表示
+    // ↓モーダル表示
     setTimeout(function() {
       modal.style.display = "block";
     }, 800);
