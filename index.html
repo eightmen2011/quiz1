@@ -202,8 +202,10 @@
       margin: 15% auto;
       padding: 20px;
       border: 1px solid #888888;
+      border-radius: 12px;
       width: 40%;  /* モーダルウィンドウの横幅 */
       text-align:center;
+      
     }
     .modal-title {
       color: #800000; /* モーダルウィンドウの文字の色 */
@@ -423,10 +425,10 @@ auth.onAuthStateChanged(user => {
     dashboardDiv.style.display = "flex";
     loadMyBooks(user.uid);
 
-    // ↓モーダル表示
+    // 👇 ここでモーダル表示
     setTimeout(function() {
       modal.style.display = "block";
-    }, 0);
+    }, 400);
 
   } else {
     statusDiv.textContent = "ログアウト中";
