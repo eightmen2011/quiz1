@@ -83,13 +83,19 @@ footer {
 }
 
 .footer-links a {
-  color: white;
+  color: #FFF;
   text-decoration: none;
+  background-image: linear-gradient(#FFF, #FFF);
+  background-repeat: no-repeat;
+  background-position: bottom left; /* 下線の初期位置 */
+  background-size: 0 1px; /* 下線のサイズ（横幅、高さ） */
+  transition: background-size 0.5s;
   font-weight: bold;
 }
 
 .footer-links a:hover {
-  text-decoration: underline;
+  background-position: bottom left; /* 下線のホバー時位置 */
+  background-size: 100% 1px; /* 下線の横幅を100%にする */
 }
 
 /* レスポンシブ対応 (Mobile First) */
